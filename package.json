@@ -1,0 +1,12 @@
+{
+  "name": "miaomiaoverse",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"bun run dev:frontend\" \"bun run dev:backend\" --names \"frontend,backend\" --prefix-colors \"cyan,yellow\"",
+    "dev:frontend": "cd frontend && bun dev",
+    "dev:backend": "cd backend && uv run fastapi dev main.py"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

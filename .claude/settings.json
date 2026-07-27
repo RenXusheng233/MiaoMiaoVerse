@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun --version)",
+      "Bash(bun lint)",
+      "Bash(bun run lint)",
+      "Bash(uv --version)",
+      "Bash(uv pip list *)",
+      "Bash(uv pip show *)",
+      "Bash(uv pip freeze)"
+    ]
+  }
+}
