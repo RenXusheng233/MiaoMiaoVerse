@@ -1,1 +1,8 @@
 .env
+
+# Runtime-generated LLM scores cache
+data/generated_scores.json
+
+# Python bytecode
+__pycache__/
+*.pyc
