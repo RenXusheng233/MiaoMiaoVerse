@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import cats, copywriting, daily_cat
+from routers import cats, copywriting, daily_cat, meme
 
 app = FastAPI(title="MiaoMiaoVerse API")
 
@@ -15,6 +15,7 @@ app.add_middleware(
 app.include_router(daily_cat.router)
 app.include_router(cats.router)
 app.include_router(copywriting.router)
+app.include_router(meme.router)
 
 
 @app.get("/")
