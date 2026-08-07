@@ -13,6 +13,7 @@ dependencies = [
     "langgraph>=1.2.9",
     "langchain-community>=0.4.2",
     "langchain-deepseek>=1.1.0",
+    "sentence-transformers>=5.7.0",
 ]
 
 [dependency-groups]
