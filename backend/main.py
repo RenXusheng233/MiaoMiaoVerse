@@ -1,9 +1,20 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from db import init_db
 from routers import cats, chat, copywriting, daily_cat, meme
 
-app = FastAPI(title="MiaoMiaoVerse API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Create tables and seed on startup; DB failure fails fast."""
+    init_db()
+    yield
+
+
+app = FastAPI(title="MiaoMiaoVerse API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

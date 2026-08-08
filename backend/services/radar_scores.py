@@ -1,22 +1,17 @@
-"""LangChain-powered radar score generation with a JSON cache layer.
+"""LangChain-powered radar score generation persisted to the ai_scores column.
 
-Generated scores live in data/generated_scores.json and take precedence
-over the hand-entered scores in data/cats.py when merged at read time.
-Deleting the cache file reverts everything to the manual data.
+Generated scores take precedence over the hand-entered scores when a breed is
+read back (see repositories.cats._to_response); re-generation updates the same
+column in place. The legacy data/generated_scores.json cache has been retired.
 """
-
-import json
-import os
-from pathlib import Path
 
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage
+from sqlmodel import Session
 
-from data.cats import CAT_BREEDS
+from repositories.cats import update_ai_scores
 from schemas.daily_cat import CatBreed, CatScores
-
-CACHE_PATH = Path(__file__).resolve().parent.parent / "data" / "generated_scores.json"
 
 # Known-good scores used as a shared reference frame, so generated scores stay
 # comparable across the whole catalog (cat-world average = 5).
@@ -83,47 +78,17 @@ def _breed_profile(breed: CatBreed) -> str:
     )
 
 
-def _load_cache() -> dict[str, CatScores]:
-    """Read the generated-scores cache; corrupt/missing entries are dropped."""
-    if not CACHE_PATH.exists():
-        return {}
-    try:
-        raw = json.loads(CACHE_PATH.read_text(encoding="utf-8"))
-        return {cat_id: CatScores(**data) for cat_id, data in raw.items()}
-    except (json.JSONDecodeError, TypeError, ValueError):
-        return {}
+def generate_scores(session: Session, breed: CatBreed, force: bool = False) -> CatScores:
+    """Generate (or return cached DB) radar scores for a breed, then persist to ai_scores."""
+    from repositories.cats import get_ai_scores
 
-
-def _write_cache(data: dict[str, CatScores]) -> None:
-    """Atomically replace the cache file (temp file + rename)."""
-    CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    tmp = CACHE_PATH.with_suffix(".json.tmp")
-    tmp.write_text(
-        json.dumps(
-            {cat_id: scores.model_dump() for cat_id, scores in data.items()},
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
-    os.replace(tmp, CACHE_PATH)
-
-
-def get_scores(breed_id: str) -> CatScores | None:
-    """Return cached generated scores for a breed, or None."""
-    return _load_cache().get(breed_id)
-
-
-def generate_scores(breed: CatBreed, force: bool = False) -> CatScores:
-    """Generate (or return cached) radar scores for a breed, then persist them."""
     if not force:
-        cached = get_scores(breed.id)
+        cached = get_ai_scores(session, breed.id)
         if cached:
             return cached
 
     try:
-        # DeepSeek thinking mode rejects tool_choice, so use JSON mode
-        # (response_format json_object) instead of the default function_calling.
+        # DeepSeek thinking mode rejects tool_choice, so use JSON mode.
         structured = _get_model().with_structured_output(CatScores, method="json_mode")
         scores = structured.invoke(
             [
@@ -136,20 +101,5 @@ def generate_scores(breed: CatBreed, force: bool = False) -> CatScores:
             f"LLM score generation failed for '{breed.id}': {exc}"
         ) from exc
 
-    cache = _load_cache()
-    cache[breed.id] = scores
-    _write_cache(cache)
+    update_ai_scores(session, breed.id, scores)
     return scores
-
-
-def merge_breeds() -> list[CatBreed]:
-    """Return all breeds with generated scores taking precedence over manual ones."""
-    generated = _load_cache()
-    if not generated:
-        return list(CAT_BREEDS)
-    return [
-        breed.model_copy(update={"scores": generated[breed.id]})
-        if breed.id in generated
-        else breed
-        for breed in CAT_BREEDS
-    ]

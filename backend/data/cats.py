@@ -1,3 +1,9 @@
+"""Seed-only baseline data for cat_breeds.
+
+Used ONLY by db.py's empty-table seed and scripts/seed_db.py. Runtime
+modules (routers/services) must read from the database instead.
+"""
+
 from schemas.daily_cat import CatBreed, CatScores
 
 CAT_BREEDS: list[CatBreed] = [
@@ -122,6 +128,3 @@ CAT_BREEDS: list[CatBreed] = [
         scores=CatScores(demolition=7, clingy=5, shedding=4, cost=2, looks=8),
     ),
 ]
-
-# lookup index for O(1) detail queries
-CAT_INDEX: dict[str, CatBreed] = {c.id: c for c in CAT_BREEDS}

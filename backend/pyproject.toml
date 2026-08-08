@@ -14,6 +14,8 @@ dependencies = [
     "langchain-community>=0.4.2",
     "langchain-deepseek>=1.1.0",
     "sentence-transformers>=5.7.0",
+    "sqlmodel>=0.0.39",
+    "psycopg[binary]>=3.3.4",
 ]
 
 [dependency-groups]
