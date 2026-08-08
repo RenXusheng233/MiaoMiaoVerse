@@ -1,8 +1,7 @@
-# backend/data/knowledge.py
-"""Hardcoded knowledge base: cat care, nutrition, and common illnesses.
+"""Seed-only baseline data for the RAG knowledge base.
 
-Seed data for the future knowledge_docs table — written during development,
-will be migrated into a database later.
+Used ONLY by db.py's empty-table seed and scripts/seed_db.py. Runtime
+modules must retrieve documents through the database instead.
 """
 
 from dataclasses import dataclass

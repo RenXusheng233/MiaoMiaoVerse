@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from db import init_db
-from routers import cats, chat, copywriting, daily_cat, meme
+from routers import cats, chat, copywriting, daily_cat, knowledge_docs, meme
 
 
 @asynccontextmanager
@@ -28,6 +28,7 @@ app.include_router(daily_cat.router)
 app.include_router(cats.router)
 app.include_router(copywriting.router)
 app.include_router(meme.router)
+app.include_router(knowledge_docs.router)
 
 
 @app.get("/")

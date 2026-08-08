@@ -1,25 +1,27 @@
-# backend/services/knowledge.py
-"""Knowledge base: document loading, local embedding, and retrieval abstraction.
+"""Knowledge base retrieval: pgvector search with keyword fallback.
 
-The vector store is in-memory for now; a future vector database (pgvector /
-Milvus) replaces only the store construction in _get_store().
+Query embeddings are computed live by the local model (document embeddings
+are precomputed and stored in PostgreSQL). search() is the stable seam —
+chat routes depend only on this signature.
 """
 
+import logging
 import threading
 
+from sqlmodel import Session
+
 from data.knowledge import KNOWLEDGE_DOCS, KnowledgeDoc
+from db import engine
+from repositories import knowledge as repo
+
+logger = logging.getLogger(__name__)
 
 _EMBEDDING_MODEL = "BAAI/bge-small-zh-v1.5"
 _DEFAULT_TOP_K = 3
-# Similarity floor; hits below this count as "no knowledge". Set to 0.45 after
-# measuring bge-small-zh-v1.5 on this corpus: every doc's top-1 title query
-# scores >= 0.56 (worst: heatstroke 0.5566), while an unrelated query peaked at
-# 0.3798. 0.35 (brief draft) let unrelated noise (0.38) through.
-_MIN_SCORE = 0.45
+_MAX_DIST = 0.55  # cosine distance; 1 - 0.45 similarity floor
 
 _lock = threading.Lock()
 _embedder = None
-_store = None
 _embedding_failed = False
 
 
@@ -40,52 +42,20 @@ def _get_embedder():
     return _embedder
 
 
-def _get_store():
-    """Lazy-build the in-memory vector store from KNOWLEDGE_DOCS."""
-    global _store
-    if _store is not None:
-        return _store
-    # NOTE: _get_embedder() must run OUTSIDE _lock — it acquires the same
-    # non-reentrant lock, and acquiring it again on this thread would deadlock.
-    embedder = _get_embedder()
-    if embedder is None:
-        return None
-    with _lock:
-        if _store is not None:
-            return _store
-        from langchain_core.documents import Document
-        from langchain_community.vectorstores import InMemoryVectorStore
-
-        docs = [
-            Document(
-                page_content=d.content,
-                metadata={"id": d.id, "title": d.title, "category": d.category},
-            )
-            for d in KNOWLEDGE_DOCS
-        ]
-        _store = InMemoryVectorStore.from_documents(docs, embedding=embedder)
-    return _store
-
-
 def search(query: str, top_k: int = _DEFAULT_TOP_K) -> list[KnowledgeDoc]:
-    """Vector similarity search; keyword fallback when the embedding model
-    or store is unavailable. Hits below _MIN_SCORE are dropped."""
-    store = _get_store()
-    if store is not None:
+    """pgvector cosine search; keyword fallback ONLY when the embedder or the
+    vector path fails. An empty vector result is a valid answer (nothing in
+    the knowledge base passes the distance floor)."""
+    embedder = _get_embedder()
+    if embedder is not None:
         try:
-            results = store.similarity_search_with_score(query, k=top_k)
-            return [
-                _doc_from_metadata(result.metadata)
-                for result, score in results
-                if score >= _MIN_SCORE
-            ]
+            query_vec = embedder.embed_query(query)
+            with Session(engine) as session:
+                return repo.search(session, query_vec, top_k=top_k, max_dist=_MAX_DIST)
         except Exception:
-            pass
+            logger.warning("pgvector search failed, falling back to keyword search", exc_info=True)
+            pass  # fall through to keyword search
     return _keyword_search(query, top_k)
-
-
-def _doc_from_metadata(metadata: dict) -> KnowledgeDoc:
-    return next(d for d in KNOWLEDGE_DOCS if d.id == metadata["id"])
 
 
 def _keyword_search(query: str, top_k: int) -> list[KnowledgeDoc]:
