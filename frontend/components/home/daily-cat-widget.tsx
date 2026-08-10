@@ -6,8 +6,22 @@ import { Button } from "@/components/ui/button";
 import { getRandomCat } from "@/lib/api";
 import type { DailyCatResponse } from "@/lib/types/cat";
 
+const IMAGE_PRELOAD_TIMEOUT_MS = 8000;
+
 interface DailyCatWidgetProps {
   initialData: DailyCatResponse;
+}
+
+/** Warm the browser cache for an image URL; resolves when loaded (or timed out). */
+function preloadImage(url: string): Promise<void> {
+  return new Promise((resolve) => {
+    // window.Image (DOM constructor) — the bare `Image` name is shadowed by
+    // the next/image import above and cannot be constructed.
+    const img = new window.Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve(); // image failure must not block the swap
+    img.src = url;
+  });
 }
 
 export function DailyCatWidget({ initialData }: DailyCatWidgetProps) {
@@ -20,6 +34,13 @@ export function DailyCatWidget({ initialData }: DailyCatWidgetProps) {
     setError(null);
     try {
       const next = await getRandomCat(data.breed.id);
+      // Swap content only after the new image is ready, so the caption and
+      // the picture change together (no blank-image window). Timeout keeps
+      // the swap from hanging on a slow image.
+      await Promise.race([
+        preloadImage(next.breed.image_url),
+        new Promise((resolve) => setTimeout(resolve, IMAGE_PRELOAD_TIMEOUT_MS)),
+      ]);
       setData(next);
     } catch {
       setError("换猫失败，请稍后重试");
@@ -36,6 +57,7 @@ export function DailyCatWidget({ initialData }: DailyCatWidgetProps) {
           src={data.breed.image_url}
           alt={data.breed.name_zh}
           fill
+          sizes="(max-width: 640px) 256px, 320px"
           className="object-cover"
           priority
         />

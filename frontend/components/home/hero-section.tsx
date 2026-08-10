@@ -26,7 +26,7 @@ export function HeroSection({ cat }: HeroSectionProps) {
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-[90vh] min-h-[560px] w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-secondary via-background to-background"
+      className="relative flex h-[90vh] min-h-140 w-full flex-col items-center justify-center overflow-hidden bg-linear-to-b from-secondary via-background to-background"
     >
       <motion.div
         style={{ y: cloudsY }}
@@ -65,7 +65,7 @@ export function HeroSection({ cat }: HeroSectionProps) {
         <h1 className="font-heading text-4xl text-foreground sm:text-5xl">
           喵喵宇宙 MiaoMiaoVerse
         </h1>
-        <p className="max-w-md text-lg text-muted-foreground">
+        <p className="max-w-lg text-lg text-muted-foreground">
           猫咪百科 · AI 文案 · 表情包生成 · 疗愈问答，一站式猫奴乐园
         </p>
         <a
