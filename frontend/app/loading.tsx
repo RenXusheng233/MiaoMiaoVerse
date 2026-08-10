@@ -7,6 +7,21 @@ export default function Loading() {
         <div className="h-11 w-72 animate-pulse rounded-xl bg-muted" />
         <div className="h-5 w-80 animate-pulse rounded-md bg-muted" />
       </div>
+      {/* 画廊占位 */}
+      <div className="mx-auto w-full max-w-5xl px-6 py-16">
+        <div className="mb-8 flex flex-col items-center gap-2">
+          <div className="h-8 w-40 animate-pulse rounded-lg bg-muted" />
+          <div className="h-5 w-56 animate-pulse rounded-md bg-muted" />
+        </div>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="flex flex-col items-center gap-2">
+              <div className="aspect-square w-full animate-pulse rounded-3xl bg-muted" />
+              <div className="h-5 w-20 animate-pulse rounded-md bg-muted" />
+            </div>
+          ))}
+        </div>
+      </div>
       {/* daily cat 占位 */}
       <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-6 px-6 py-16 text-center">
         <div className="h-8 w-48 animate-pulse rounded-lg bg-muted" />

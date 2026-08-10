@@ -23,6 +23,8 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  --color-radar-fill: var(--radar-fill);
+  --color-radar-stroke: var(--radar-stroke);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -72,6 +74,9 @@
   --chart-3: oklch(0.92 0.05 90);
   --chart-4: oklch(0.75 0.1 320);
   --chart-5: oklch(0.7 0.12 260);
+  /* Radar chart data polygon fill and stroke (caramel/cream palette). */
+  --radar-fill: oklch(0.85 0.1 90);
+  --radar-stroke: oklch(0.6 0.15 55);
   --radius: 1.25rem;
   --sidebar: oklch(0.98 0.012 85);
   --sidebar-foreground: oklch(0.32 0.03 30);

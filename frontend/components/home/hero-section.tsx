@@ -56,6 +56,7 @@ export function HeroSection({ cat }: HeroSectionProps) {
           src={cat.image_url}
           alt={cat.name_zh}
           fill
+          sizes="(max-width: 640px) 160px, 224px"
           className="object-cover"
           priority
         />

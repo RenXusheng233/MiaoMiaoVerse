@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { getRandomCat } from "@/lib/api";
 import type { DailyCatResponse } from "@/lib/types/cat";
 
@@ -53,14 +55,16 @@ export function DailyCatWidget({ initialData }: DailyCatWidgetProps) {
     <section className="mx-auto flex w-full max-w-3xl flex-col items-center gap-6 px-6 py-16 text-center">
       <h2 className="font-heading text-3xl text-foreground">今日明星猫咪</h2>
       <div className="relative aspect-square w-64 overflow-hidden rounded-4xl border-4 border-card shadow-xl sm:w-80">
-        <Image
-          src={data.breed.image_url}
-          alt={data.breed.name_zh}
-          fill
-          sizes="(max-width: 640px) 256px, 320px"
-          className="object-cover"
-          priority
-        />
+        <Link href={`/cats/${data.breed.id}`} className="relative block h-full w-full">
+          <Image
+            src={data.breed.image_url}
+            alt={data.breed.name_zh}
+            fill
+            sizes="(max-width: 640px) 256px, 320px"
+            className="object-cover"
+            priority
+          />
+        </Link>
       </div>
       <div className="space-y-2">
         <h3 className="font-heading text-2xl text-foreground">
@@ -73,9 +77,17 @@ export function DailyCatWidget({ initialData }: DailyCatWidgetProps) {
           &ldquo;{data.breed.quote}&rdquo;
         </p>
       </div>
-      <Button onClick={handleReroll} disabled={isLoading} size="lg">
-        {isLoading ? "召唤中…" : "换一只"}
-      </Button>
+      <div className="flex gap-3">
+        <Button onClick={handleReroll} disabled={isLoading} size="lg">
+          {isLoading ? "召唤中…" : "换一只"}
+        </Button>
+        <Link
+          href={`/cats/${data.breed.id}`}
+          className={cn(buttonVariants({ variant: "secondary", size: "lg" }))}
+        >
+          查看详情
+        </Link>
+      </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </section>
   );
