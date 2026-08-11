@@ -1,4 +1,5 @@
 import type { CatBreed, DailyCatResponse } from "@/lib/types/cat";
+import { streamSSE, type SSEEvent } from "@/lib/sse";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -51,4 +52,49 @@ export async function getCat(id: string): Promise<CatBreed | null> {
     throw new Error(`Failed to fetch cat ${id}: ${res.status}`);
   }
   return res.json();
+}
+
+export type Platform = "moments" | "weibo" | "xiaohongshu" | "douyin";
+export type CopyStyle = "funny" | "healing" | "cool";
+
+export interface CopyForm {
+  cat_name: string;
+  breed?: string;
+  behavior?: string;
+  style_pref?: string;
+  platform: Platform;
+}
+
+export function generateCopyStream(
+  form: CopyForm,
+  onEvent: (evt: SSEEvent) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  return streamSSE(
+    `${API_BASE_URL}/api/copy/generate`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    },
+    onEvent,
+    signal,
+  );
+}
+
+export function regenerateCopyStream(
+  form: CopyForm & { style: CopyStyle },
+  onEvent: (evt: SSEEvent) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  return streamSSE(
+    `${API_BASE_URL}/api/copy/regenerate`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    },
+    onEvent,
+    signal,
+  );
 }
