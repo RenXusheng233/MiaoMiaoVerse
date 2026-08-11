@@ -45,7 +45,7 @@ uvicorn main:app --reload        # → http://localhost:8000
 ```
 
 - 接口文档(Swagger):http://localhost:8000/docs
-- **启动时自动**:建表(`create_all`)+ 空表导入种子数据(cat_breeds 12 品种 + knowledge_docs 18 篇,含预计算 embedding)
+- **启动时自动**:建表(`create_all`)+ 空表导入种子数据(cat_breeds 11 品种 + knowledge_docs 18 篇,含预计算 embedding)
 
 ## 常用命令速查
 
