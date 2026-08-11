@@ -102,7 +102,7 @@ export function CopyForm({
           id="cat-name"
           value={value.cat_name}
           onChange={(e) => set("cat_name", e.target.value)}
-          placeholder="例如:布丁"
+          placeholder="例如：布丁"
           maxLength={50}
           disabled={disabled}
         />

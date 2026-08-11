@@ -23,7 +23,7 @@ export function ChatInput({ disabled, onSend }: ChatInputProps) {
   }
 
   return (
-    <div className="flex items-end gap-2">
+    <div className="flex items-center gap-2">
       <Textarea
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -35,13 +35,16 @@ export function ChatInput({ disabled, onSend }: ChatInputProps) {
           }
         }}
         placeholder="问问猫咪的事…"
-        className="min-h-11 max-h-32 flex-1 resize-none"
+        // py-2.5 keeps the single-line placeholder vertically centered
+        // (44px height = 10px + 24px line + 10px)
+        className="min-h-11 max-h-32 flex-1 resize-none py-2.5"
         disabled={disabled}
       />
       <Button
         onClick={handleSend}
         disabled={disabled || !value.trim()}
         size="icon"
+        className="h-11 w-11 shrink-0"
         aria-label="发送"
       >
         <Send className="h-4 w-4" />

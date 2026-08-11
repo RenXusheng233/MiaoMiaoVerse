@@ -46,7 +46,7 @@ export function CopyWorkspace({ cats }: CopyWorkspaceProps) {
       doneCountRef.current += 1;
     } else if (evt.event === "error") {
       errorSeenRef.current = true;
-      setError("文案生成失败,请稍后重试");
+      setError("文案生成失败，请稍后重试");
       setStatus("error");
     }
   }
@@ -70,12 +70,12 @@ export function CopyWorkspace({ cats }: CopyWorkspaceProps) {
         setStatus("complete");
       } else if (!errorSeenRef.current) {
         // stream ended without the expected done events — treat as truncated
-        setError("文案生成中断,请稍后重试");
+        setError("文案生成中断，请稍后重试");
         setStatus("error");
       }
     } catch {
       if (!ac.signal.aborted) {
-        setError("生成失败,请检查后端服务后重试");
+        setError("生成失败，请检查后端服务后重试");
         setStatus("error");
       }
     }
@@ -100,7 +100,7 @@ export function CopyWorkspace({ cats }: CopyWorkspaceProps) {
       }
     } catch {
       if (!ac.signal.aborted) {
-        setError("重新生成失败,请稍后重试");
+        setError("重新生成失败，请稍后重试");
       }
     } finally {
       setRegenerating((cur) => (cur === style ? null : cur));
@@ -118,7 +118,7 @@ export function CopyWorkspace({ cats }: CopyWorkspaceProps) {
       <header className="mb-8 text-center">
         <h1 className="font-heading text-3xl text-foreground">朋友圈文案神器</h1>
         <p className="mt-2 text-muted-foreground">
-          填上猫咪的信息,一键生成三个风格的文案
+          填上猫咪的信息，一键生成三个风格的文案
         </p>
       </header>
 
