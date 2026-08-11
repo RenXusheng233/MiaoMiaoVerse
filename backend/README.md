@@ -1,6 +1,6 @@
 # MiaoMiaoVerse Backend
 
-面向猫奴的 AI 全栈娱乐平台后端服务:猫咪百科、AI 文案、表情包、疗愈问答。
+面向猫奴的 AI 全栈娱乐平台后端服务：猫咪百科、AI 文案、表情包、疗愈问答。
 
 ## 技术栈
 
@@ -9,7 +9,7 @@
 | 框架     | FastAPI 0.139 · Uvicorn · Python 3.14                                                 |
 | ORM      | SQLModel · PostgreSQL 18(Docker)· pgvector(向量检索)                                  |
 | AI       | LangChain · DeepSeek(`deepseek:deepseek-v4-flash`)· bge-small-zh-v1.5(本地 embedding) |
-| 依赖管理 | uv(声明式,`uv add` / `uv sync`)                                                       |
+| 依赖管理 | uv(声明式，`uv add` / `uv sync`)                                                       |
 
 ## 快速开始
 
@@ -44,8 +44,8 @@ source .venv/bin/activate
 uvicorn main:app --reload        # → http://localhost:8000
 ```
 
-- 接口文档(Swagger):http://localhost:8000/docs
-- **启动时自动**:建表(`create_all`)+ 空表导入种子数据(cat_breeds 11 品种 + knowledge_docs 18 篇,含预计算 embedding)
+- 接口文档(Swagger)：http://localhost:8000/docs
+- **启动时自动**：建表(`create_all`)+ 空表导入种子数据(cat_breeds 11 品种 + knowledge_docs 18 篇，含预计算 embedding)
 
 ## 常用命令速查
 
@@ -65,7 +65,7 @@ uv run python -m scripts.seed_db
 uv run python -m scripts.seed_db --reset
 ```
 
-**日常工作流**:改 `data/cats.py` 或 `data/knowledge.py` 里的种子数据 → 跑 `uv run python -m scripts.seed_db` 同步到数据库 → 前端刷新即生效。
+**日常工作流**：改 `data/cats.py` 或 `data/knowledge.py` 里的种子数据 → 跑 `uv run python -m scripts.seed_db` 同步到数据库 → 前端刷新即生效。
 
 ### AI 雷达分
 
@@ -97,13 +97,13 @@ uv sync           # 按锁文件还原环境
 | -------- | ----------------------------------------------------------------- | ------------------------------------------------------------ |
 | 首页     | `GET /api/daily-cat`                                              | 今日明星猫(同日确定)                                         |
 |          | `GET /api/daily-cat/random?exclude_id=`                           | 随机换一只                                                   |
-| 猫咪百科 | `GET /api/cats`                                                   | 列表,筛选 `q` / `size` / `coat` / `owner`(中文值需 URL 编码) |
+| 猫咪百科 | `GET /api/cats`                                                   | 列表，筛选 `q` / `size` / `coat` / `owner`(中文值需 URL 编码) |
 |          | `GET /api/cats/{id}`                                              | 详情(ai_scores 优先)                                         |
 |          | `POST /api/cats` / `PUT /api/cats/{id}` / `DELETE /api/cats/{id}` | 品种管理 CRUD(409 重复 / 404 不存在)                         |
 |          | `POST /api/cats/{id}/radar-scores?force=`                         | LLM 生成雷达分(缓存命中 `source="cached"`)                   |
-| 文案生成 | `POST /api/copy/generate`                                         | 三版并行生成(SSE:chunk/done/error)                           |
+| 文案生成 | `POST /api/copy/generate`                                         | 三版并行生成(SSE：chunk/done/error)                           |
 |          | `POST /api/copy/regenerate`                                       | 单版重新生成(SSE)                                            |
-| 表情包   | `POST /api/meme/overlay`                                          | 文字叠加方案(multipart:image 或 image_url + text + emotion)  |
+| 表情包   | `POST /api/meme/overlay`                                          | 文字叠加方案(multipart：image 或 image_url + text + emotion)  |
 | 疗愈问答 | `POST /api/chat`                                                  | 双路由 SSE(闲聊 / 医疗 RAG + disclaimer 事件)                |
 | 知识库   | `GET /api/knowledge-docs?category=`                               | 文档列表                                                     |
 |          | `GET/POST/PUT/DELETE /api/knowledge-docs(/id)`                    | 文档管理(新增/更新自动计算 embedding)                        |
@@ -126,11 +126,11 @@ backend/
 
 ## 数据权威模型
 
-- **数据库是唯一权威**:运行时一切读写走 PostgreSQL;`data/` 下文件是种子基准(仅首次导入与 sync/reset 时读取)
-- **增删改品种/文档的正规途径是管理接口**(`POST/PUT/DELETE`),不是改文件
+- **数据库是唯一权威**：运行时一切读写走 PostgreSQL;`data/` 下文件是种子基准(仅首次导入与 sync/reset 时读取)
+- **增删改品种/文档的正规途径是管理接口**(`POST/PUT/DELETE`)，不是改文件
 - 雷达分(`ai_scores`)由 `POST /api/cats/{id}/radar-scores` 或 `generate_radar.py` 管理
-- 检索阈值:pgvector 余弦距离 0.55(与 bge-small-zh 512 维匹配)
+- 检索阈值：pgvector 余弦距离 0.55(与 bge-small-zh 512 维匹配)
 
 ## 文档索引
 
-各功能模块的设计与实现记录见 `docs/superpowers/specs/`(设计)与 `docs/superpowers/plans/`(计划),按模块命名(如 `2026-08-07-pgvector-rag-design.md`)。
+各功能模块的设计与实现记录见 `docs/superpowers/specs/`(设计)与 `docs/superpowers/plans/`(计划)，按模块命名(如 `2026-08-07-pgvector-rag-design.md`)。
