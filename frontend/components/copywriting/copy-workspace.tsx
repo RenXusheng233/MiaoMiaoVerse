@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { CopyCard } from "@/components/copywriting/copy-card";
 import { CopyForm } from "@/components/copywriting/copy-form";
 import {
@@ -108,6 +109,12 @@ export function CopyWorkspace({ cats }: CopyWorkspaceProps) {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-12">
+      <Link
+        href="/"
+        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        ← 返回首页
+      </Link>
       <header className="mb-8 text-center">
         <h1 className="font-heading text-3xl text-foreground">朋友圈文案神器</h1>
         <p className="mt-2 text-muted-foreground">

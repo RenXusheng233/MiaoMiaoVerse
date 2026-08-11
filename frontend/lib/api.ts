@@ -98,3 +98,26 @@ export function regenerateCopyStream(
     signal,
   );
 }
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  disclaimer?: string; // medical-route disclaimer text (compliance)
+}
+
+export function sendChatMessage(
+  message: string,
+  onEvent: (evt: SSEEvent) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  return streamSSE(
+    `${API_BASE_URL}/api/chat`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    },
+    onEvent,
+    signal,
+  );
+}
