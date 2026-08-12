@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
+  SelectGroup,
   SelectContent,
   SelectItem,
   SelectTrigger,
@@ -201,6 +202,7 @@ export function CopyForm({
       <div className="grid gap-1.5">
         <Label>平台目标</Label>
         <Select
+          items={PLATFORMS}
           value={value.platform}
           onValueChange={(v) => set("platform", v as Platform)}
           disabled={disabled}
@@ -209,11 +211,13 @@ export function CopyForm({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {PLATFORMS.map((p) => (
-              <SelectItem key={p.value} value={p.value}>
-                {p.label}
-              </SelectItem>
-            ))}
+            <SelectGroup>
+              {PLATFORMS.map((p) => (
+                <SelectItem key={p.value} value={p.value}>
+                  {p.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
       </div>

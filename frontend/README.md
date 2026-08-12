@@ -4,14 +4,14 @@
 
 ## 技术栈
 
-| 层 | 技术 |
-| --- | --- |
-| 框架 | Next.js 16.2(App Router，RSC 开启)· React 19 |
-| 语言 | TypeScript 5(strict) |
-| 样式 | Tailwind CSS v4(CSS-first，无 tailwind.config.*) |
-| 组件 | shadcn/ui(`base-nova` 风格)· `@base-ui/react`(headless)· lucide-react 图标 |
-| 动画 | motion(入场动画) |
-| 包管理 | **bun**(绝不 npm/yarn) |
+| 层     | 技术                                                                       |
+| ------ | -------------------------------------------------------------------------- |
+| 框架   | Next.js 16.2(App Router，RSC 开启)· React 19                               |
+| 语言   | TypeScript 5(strict)                                                       |
+| 样式   | Tailwind CSS v4(CSS-first，无 tailwind.config.*)                           |
+| 组件   | shadcn/ui(`base-nova` 风格)· `@base-ui/react`(headless)· lucide-react 图标 |
+| 动画   | motion(入场动画)                                                           |
+| 包管理 | **bun**(绝不 npm/yarn)                                                     |
 
 ## 快速开始
 
@@ -42,14 +42,14 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 
 ## 页面路由
 
-| 路由 | 内容 | 状态 |
-| --- | --- | --- |
-| `/` | 首页：视差 Hero + 快捷直达 + 猫咪百科画廊 + 今日明星猫 | ✅ |
-| `/cats/[id]` | 猫咪详情：大图/语录/网梗标签/基本信息/适养人群徽章/雷达图 | ✅ |
-| `/copywriting` | 文案生成：表单 + 三版并行 SSE 流式渲染 + 重生成 + 复制 | ✅ |
-| `/chat` | 疗愈问答：聊天式问答 + 流式渲染 + 医疗免责声明 | ✅ |
-| `/meme` | 表情包生成 | 待开发(后端已就绪) |
-| `/cats` | 品种列表页(带筛选) | 规划中(当前首页画廊已覆盖) |
+| 路由           | 内容                                                      | 状态                       |
+| -------------- | --------------------------------------------------------- | -------------------------- |
+| `/`            | 首页：视差 Hero + 快捷直达 + 猫咪百科画廊 + 今日明星猫    | ✅                          |
+| `/cats/[id]`   | 猫咪详情：大图/语录/网梗标签/基本信息/适养人群徽章/雷达图 | ✅                          |
+| `/copywriting` | 文案生成：表单 + 三版并行 SSE 流式渲染 + 重生成 + 复制    | ✅                          |
+| `/chat`        | 疗愈问答：聊天式问答 + 流式渲染 + 医疗免责声明            | ✅                          |
+| `/meme`        | 表情包生成                                                | 待开发(后端已就绪)         |
+| `/cats`        | 品种列表页(带筛选)                                        | 规划中(当前首页画廊已覆盖) |
 
 ## 常用命令
 
@@ -96,7 +96,7 @@ frontend/
 - **数据获取**：API 封装统一 `cache: "no-store"`(本项目数据实时变化，不做缓存);RSC 页面服务端获取数据，客户端组件只做交互
 - **图片域名**：外部图源需在 `next.config.ts` 的 `remotePatterns` 配置(`cdn2.thecatapi.com` 已配);`next/image` 的 `fill` 要求**直接父元素**为 `relative/absolute/fixed`
 - **SSE**：EventSource 不支持 POST，统一用 `lib/sse.ts` 的 `streamSSE`(手写解析，chat 页面复用)
-- **样式约定**：奶油马卡龙配色、`font-heading`(ZCOOL KuaiLe)标题、`rounded-3xl/4xl` 大圆角
+- **样式约定**：奶油马卡龙配色、`font-heading`(ZCOOL KuaiLe)标题、小圆角
 
 ## 文档索引
 

@@ -77,7 +77,7 @@
   /* Radar chart data polygon fill and stroke (caramel/cream palette). */
   --radar-fill: oklch(0.85 0.1 90);
   --radar-stroke: oklch(0.6 0.15 55);
-  --radius: 1.25rem;
+  --radius: 0.625rem;
   --sidebar: oklch(0.98 0.012 85);
   --sidebar-foreground: oklch(0.32 0.03 30);
   --sidebar-primary: oklch(0.78 0.13 15);
@@ -126,9 +126,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
