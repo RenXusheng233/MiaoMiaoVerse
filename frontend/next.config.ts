@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -7,11 +7,11 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "cdn2.thecatapi.com",
+        protocol: 'https',
+        hostname: 'cdn2.thecatapi.com',
       },
     ],
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

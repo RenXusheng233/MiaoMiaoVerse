@@ -1,37 +1,37 @@
-"use client";
+'use client'
 
-import { motion } from "motion/react";
+import { motion } from 'motion/react'
 
-import type { CatScores } from "@/lib/types/cat";
+import type { CatScores } from '@/lib/types/cat'
 
 const DIMENSIONS = [
-  { key: "demolition", label: "拆家" },
-  { key: "clingy", label: "粘人" },
-  { key: "shedding", label: "掉毛" },
-  { key: "cost", label: "掉钱包" },
-  { key: "looks", label: "颜值" },
-] as const;
+  { key: 'demolition', label: '拆家' },
+  { key: 'clingy', label: '粘人' },
+  { key: 'shedding', label: '掉毛' },
+  { key: 'cost', label: '掉钱包' },
+  { key: 'looks', label: '颜值' },
+] as const
 
-const SIZE = 260;
-const CENTER = SIZE / 2;
-const RADIUS = 88;
+const SIZE = 260
+const CENTER = SIZE / 2
+const RADIUS = 88
 
 function polar(index: number, ratio: number): [number, number] {
-  const angle = (Math.PI * 2 * index) / DIMENSIONS.length - Math.PI / 2;
+  const angle = (Math.PI * 2 * index) / DIMENSIONS.length - Math.PI / 2
   return [
     CENTER + RADIUS * ratio * Math.cos(angle),
     CENTER + RADIUS * ratio * Math.sin(angle),
-  ];
+  ]
 }
 
 function polygonPoints(ratio: number): string {
-  return DIMENSIONS.map((_, i) => polar(i, ratio).join(",")).join(" ");
+  return DIMENSIONS.map((_, i) => polar(i, ratio).join(',')).join(' ')
 }
 
 export function RadarChart({ scores }: { scores: CatScores }) {
   const dataPoints = DIMENSIONS.map((d, i) =>
-    polar(i, scores[d.key] / 10).join(",")
-  ).join(" ");
+    polar(i, scores[d.key] / 10).join(','),
+  ).join(' ')
 
   return (
     <svg
@@ -57,7 +57,7 @@ export function RadarChart({ scores }: { scores: CatScores }) {
         strokeDasharray="4 4"
       />
       {DIMENSIONS.map((d, i) => {
-        const [x, y] = polar(i, 1);
+        const [x, y] = polar(i, 1)
         return (
           <line
             key={d.key}
@@ -68,7 +68,7 @@ export function RadarChart({ scores }: { scores: CatScores }) {
             stroke="currentColor"
             strokeOpacity={0.18}
           />
-        );
+        )
       })}
 
       {/* 数据多边形(奶油马卡龙色 + 入场动画) */}
@@ -80,12 +80,12 @@ export function RadarChart({ scores }: { scores: CatScores }) {
         strokeLinejoin="round"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
       />
 
       {/* 顶点标签:维度名 + 分值 */}
       {DIMENSIONS.map((d, i) => {
-        const [x, y] = polar(i, 1.2);
+        const [x, y] = polar(i, 1.2)
         return (
           <text
             key={d.key}
@@ -97,8 +97,8 @@ export function RadarChart({ scores }: { scores: CatScores }) {
           >
             {d.label} {scores[d.key]}
           </text>
-        );
+        )
       })}
     </svg>
-  );
+  )
 }

@@ -1,10 +1,10 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image'
+import Link from 'next/link'
 
-import type { CatBreed } from "@/lib/types/cat";
+import type { CatBreed } from '@/lib/types/cat'
 
 interface CatGalleryProps {
-  cats: CatBreed[];
+  cats: CatBreed[]
 }
 
 export function CatGallery({ cats }: CatGalleryProps) {
@@ -29,12 +29,14 @@ export function CatGallery({ cats }: CatGalleryProps) {
               />
             </div>
             <div className="mt-2 text-center">
-              <p className="font-heading text-lg text-foreground">{cat.name_zh}</p>
+              <p className="font-heading text-lg text-foreground">
+                {cat.name_zh}
+              </p>
               <p className="text-xs text-muted-foreground">{cat.name_en}</p>
             </div>
           </Link>
         ))}
       </div>
     </section>
-  );
+  )
 }

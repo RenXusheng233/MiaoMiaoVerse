@@ -1,27 +1,27 @@
-"use client";
+'use client'
 
-import { useRef } from "react";
-import Image from "next/image";
-import { motion, useScroll, useTransform } from "motion/react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import type { CatBreed } from "@/lib/types/cat";
+import { useRef } from 'react'
+import Image from 'next/image'
+import { motion, useScroll, useTransform } from 'motion/react'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import type { CatBreed } from '@/lib/types/cat'
 
 interface HeroSectionProps {
-  cat: CatBreed;
+  cat: CatBreed
 }
 
 export function HeroSection({ cat }: HeroSectionProps) {
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start start", "end start"],
-  });
+    offset: ['start start', 'end start'],
+  })
 
-  const cloudsY = useTransform(scrollYProgress, [0, 1], [0, -80]);
-  const pawsY = useTransform(scrollYProgress, [0, 1], [0, -160]);
-  const catY = useTransform(scrollYProgress, [0, 1], [0, -240]);
-  const catOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const cloudsY = useTransform(scrollYProgress, [0, 1], [0, -80])
+  const pawsY = useTransform(scrollYProgress, [0, 1], [0, -160])
+  const catY = useTransform(scrollYProgress, [0, 1], [0, -240])
+  const catOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
 
   return (
     <section
@@ -71,11 +71,11 @@ export function HeroSection({ cat }: HeroSectionProps) {
         </p>
         <a
           href="#quick-links"
-          className={cn(buttonVariants({ size: "lg" }), "mt-2")}
+          className={cn(buttonVariants({ size: 'lg' }), 'mt-2')}
         >
           进入探索
         </a>
       </div>
     </section>
-  );
+  )
 }

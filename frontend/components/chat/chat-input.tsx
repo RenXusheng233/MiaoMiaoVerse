@@ -1,25 +1,25 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { useState } from 'react'
+import { Send } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 
 interface ChatInputProps {
-  disabled: boolean;
-  onSend: (message: string) => void;
+  disabled: boolean
+  onSend: (message: string) => void
 }
 
 export function ChatInput({ disabled, onSend }: ChatInputProps) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('')
 
   function handleSend() {
-    const trimmed = value.trim();
+    const trimmed = value.trim()
     if (!trimmed || disabled) {
-      return;
+      return
     }
-    onSend(trimmed);
-    setValue("");
+    onSend(trimmed)
+    setValue('')
   }
 
   return (
@@ -29,9 +29,9 @@ export function ChatInput({ disabled, onSend }: ChatInputProps) {
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
           // skip IME composition confirms (Chinese input method Enter)
-          if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-            e.preventDefault();
-            handleSend();
+          if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+            e.preventDefault()
+            handleSend()
           }
         }}
         placeholder="问问猫咪的事…"
@@ -50,5 +50,5 @@ export function ChatInput({ disabled, onSend }: ChatInputProps) {
         <Send className="h-4 w-4" />
       </Button>
     </div>
-  );
+  )
 }

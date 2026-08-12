@@ -1,8 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image'
+import Link from 'next/link'
 
-import { RadarChart } from "@/components/cats/radar-chart";
-import type { CatBreed } from "@/lib/types/cat";
+import { RadarChart } from '@/components/cats/radar-chart'
+import type { CatBreed } from '@/lib/types/cat'
 
 export function CatDetail({ cat }: { cat: CatBreed }) {
   return (
@@ -78,5 +78,5 @@ export function CatDetail({ cat }: { cat: CatBreed }) {
         </div>
       </section>
     </article>
-  );
+  )
 }

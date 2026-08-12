@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 export default function CatNotFound() {
   return (
@@ -11,5 +11,5 @@ export default function CatNotFound() {
         返回首页
       </Link>
     </div>
-  );
+  )
 }

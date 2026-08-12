@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { useMemo } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Combobox,
   ComboboxContent,
@@ -9,9 +9,9 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from "@/components/ui/combobox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/combobox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectGroup,
@@ -19,49 +19,49 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import type { CopyForm, Platform } from "@/lib/api";
-import type { CatBreed } from "@/lib/types/cat";
+} from '@/components/ui/select'
+import type { CopyForm, Platform } from '@/lib/api'
+import type { CatBreed } from '@/lib/types/cat'
 
 const BEHAVIOR_CHIPS = [
-  "正在拆沙发",
-  "刚睡醒",
-  "粘人精附体",
-  "疯狂跑酷",
-  "求摸摸",
-  "犯错了装无辜",
-];
+  '正在拆沙发',
+  '刚睡醒',
+  '粘人精附体',
+  '疯狂跑酷',
+  '求摸摸',
+  '犯错了装无辜',
+]
 
 const STYLE_CHIPS = [
-  "带点反差萌",
-  "语气沙雕一点",
-  "治愈温柔一点",
-  "高冷傲娇",
-  "撒个娇",
-];
+  '带点反差萌',
+  '语气沙雕一点',
+  '治愈温柔一点',
+  '高冷傲娇',
+  '撒个娇',
+]
 
 const PLATFORMS: { value: Platform; label: string }[] = [
-  { value: "moments", label: "朋友圈" },
-  { value: "weibo", label: "微博" },
-  { value: "xiaohongshu", label: "小红书" },
-  { value: "douyin", label: "抖音" },
-];
+  { value: 'moments', label: '朋友圈' },
+  { value: 'weibo', label: '微博' },
+  { value: 'xiaohongshu', label: '小红书' },
+  { value: 'douyin', label: '抖音' },
+]
 
 interface BreedOption {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 interface CopyFormProps {
-  value: CopyForm;
-  onChange: (form: CopyForm) => void;
-  cats: CatBreed[];
-  disabled: boolean;
-  onSubmit: () => void;
+  value: CopyForm
+  onChange: (form: CopyForm) => void
+  cats: CatBreed[]
+  disabled: boolean
+  onSubmit: () => void
 }
 
 const CHIP_CLASS =
-  "rounded-full border border-border px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-50";
+  'rounded-full border border-border px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-50'
 
 export function CopyForm({
   value,
@@ -71,7 +71,7 @@ export function CopyForm({
   onSubmit,
 }: CopyFormProps) {
   const set = <K extends keyof CopyForm>(key: K, val: CopyForm[K]) =>
-    onChange({ ...value, [key]: val });
+    onChange({ ...value, [key]: val })
 
   // Base UI filters options through the root `items` prop. The
   // `{ value, label }` shape makes the label drive both the input display and
@@ -79,20 +79,20 @@ export function CopyForm({
   // so cats are searchable by name_zh or name_en.
   const breedOptions = useMemo<BreedOption[]>(
     () => [
-      { value: "", label: "不填(未知品种)" },
+      { value: '', label: '不填(未知品种)' },
       ...cats.map((c) => ({
         value: c.name_zh,
         label: `${c.name_zh} ${c.name_en}`,
       })),
     ],
     [cats],
-  );
+  )
 
   // The selected value must be the full option object for Base UI to match.
   const selectedBreed = useMemo(
     () => breedOptions.find((o) => o.value === value.breed) ?? null,
     [breedOptions, value.breed],
-  );
+  )
 
   return (
     <div className="space-y-4">
@@ -102,7 +102,7 @@ export function CopyForm({
         <Input
           id="cat-name"
           value={value.cat_name}
-          onChange={(e) => set("cat_name", e.target.value)}
+          onChange={(e) => set('cat_name', e.target.value)}
           placeholder="例如：布丁"
           maxLength={50}
           disabled={disabled}
@@ -124,7 +124,7 @@ export function CopyForm({
           // message shows unconditionally.
           items={breedOptions}
           onValueChange={(opt) =>
-            set("breed", opt && opt.value ? opt.value : undefined)
+            set('breed', opt && opt.value ? opt.value : undefined)
           }
           disabled={disabled}
         >
@@ -153,8 +153,8 @@ export function CopyForm({
         <Label htmlFor="behavior">当前状态/行为</Label>
         <Input
           id="behavior"
-          value={value.behavior ?? ""}
-          onChange={(e) => set("behavior", e.target.value || undefined)}
+          value={value.behavior ?? ''}
+          onChange={(e) => set('behavior', e.target.value || undefined)}
           maxLength={100}
           disabled={disabled}
         />
@@ -163,7 +163,7 @@ export function CopyForm({
             <button
               key={chip}
               type="button"
-              onClick={() => set("behavior", chip)}
+              onClick={() => set('behavior', chip)}
               className={CHIP_CLASS}
               disabled={disabled}
             >
@@ -178,8 +178,8 @@ export function CopyForm({
         <Label htmlFor="style-pref">风格偏好</Label>
         <Input
           id="style-pref"
-          value={value.style_pref ?? ""}
-          onChange={(e) => set("style_pref", e.target.value || undefined)}
+          value={value.style_pref ?? ''}
+          onChange={(e) => set('style_pref', e.target.value || undefined)}
           maxLength={200}
           disabled={disabled}
         />
@@ -188,7 +188,7 @@ export function CopyForm({
             <button
               key={chip}
               type="button"
-              onClick={() => set("style_pref", chip)}
+              onClick={() => set('style_pref', chip)}
               className={CHIP_CLASS}
               disabled={disabled}
             >
@@ -204,7 +204,7 @@ export function CopyForm({
         <Select
           items={PLATFORMS}
           value={value.platform}
-          onValueChange={(v) => set("platform", v as Platform)}
+          onValueChange={(v) => set('platform', v as Platform)}
           disabled={disabled}
         >
           <SelectTrigger className="w-full">
@@ -234,5 +234,5 @@ export function CopyForm({
         <p className="text-sm text-muted-foreground">给猫咪起个名字吧</p>
       ) : null}
     </div>
-  );
+  )
 }

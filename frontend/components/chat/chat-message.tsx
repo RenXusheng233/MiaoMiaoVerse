@@ -1,23 +1,23 @@
-"use client";
+'use client'
 
-import { cn } from "@/lib/utils";
-import type { ChatMessage as ChatMessageData } from "@/lib/api";
+import { cn } from '@/lib/utils'
+import type { ChatMessage as ChatMessageData } from '@/lib/api'
 
 interface ChatMessageProps {
-  message: ChatMessageData;
-  isStreaming: boolean;
+  message: ChatMessageData
+  isStreaming: boolean
 }
 
 export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
-  const isUser = message.role === "user";
+  const isUser = message.role === 'user'
   return (
-    <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn('flex', isUser ? 'justify-end' : 'justify-start')}>
       <div
         className={cn(
-          "max-w-[80%] rounded-xl px-4 py-3",
+          'max-w-[80%] rounded-xl px-4 py-3',
           isUser
-            ? "bg-primary text-primary-foreground"
-            : "border border-border bg-card text-foreground",
+            ? 'bg-primary text-primary-foreground'
+            : 'border border-border bg-card text-foreground',
         )}
       >
         <p className="whitespace-pre-wrap">
@@ -33,5 +33,5 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
         ) : null}
       </div>
     </div>
-  );
+  )
 }
