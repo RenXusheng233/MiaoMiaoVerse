@@ -1,4 +1,5 @@
 ### 技术选型
+- [ ] 模型: 多模态大模型(支持图像)
 - [x] database: postgres, pgvector
 - [x] ORM: SQLModel
 - [ ] 加密: passlib, bcrypt
