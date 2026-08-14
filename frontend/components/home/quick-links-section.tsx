@@ -23,9 +23,9 @@ const QUICK_LINKS: QuickLink[] = [
     gradientTo: 'oklch(0.92 0.08 95)',
   },
   {
-    href: '/meme',
-    title: '一键生成猫咪表情包',
-    description: '上传猫咪照片，秒变斗图神器。',
+    href: '/meme-studio',
+    title: '表情包工作室',
+    description: '拖拽拼装文字与贴纸，创作专属表情包。',
     gradientFrom: 'oklch(0.85 0.09 175)',
     gradientTo: 'oklch(0.85 0.1 230)',
   },
