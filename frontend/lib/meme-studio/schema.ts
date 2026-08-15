@@ -6,7 +6,13 @@
 import type { BubblePresetId } from './presets'
 
 export type CanvasObjectType = 'text' | 'bubble' | 'emoji' | 'shape'
-export type ShapeKind = 'circle' | 'heart' | 'star'
+export type ShapeKind =
+  | 'circle'
+  | 'heart'
+  | 'star'
+  | 'square'
+  | 'triangle'
+  | 'diamond'
 export type BackgroundMode = 'color' | 'gradient' | 'image'
 
 export interface BaseObject {
@@ -37,6 +43,13 @@ export interface BubbleObject extends BaseObject {
   text: string
   fontSize: number
   fill: string
+  /** Container background opacity (0 = transparent, 1 = solid). */
+  fillOpacity: number
+  stroke: string
+  strokeWidth: number
+  /** Container inner padding in px (symmetric per axis). */
+  paddingX: number
+  paddingY: number
   cornerRadius: number
 }
 
@@ -50,6 +63,8 @@ export interface ShapeObject extends BaseObject {
   type: 'shape'
   shape: ShapeKind
   fill: string
+  /** Fill opacity (0 = transparent, 1 = solid). */
+  fillOpacity: number
   stroke: string
   strokeWidth: number
 }

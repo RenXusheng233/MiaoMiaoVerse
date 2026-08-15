@@ -50,6 +50,9 @@ export function ComponentPalette({ onAdd }: ComponentPaletteProps) {
                   ...createDefaultObject('bubble'),
                   preset: id,
                   fill: p.fill,
+                  fillOpacity: p.fillOpacity,
+                  stroke: p.stroke,
+                  strokeWidth: p.strokeWidth,
                   cornerRadius: p.cornerRadius,
                 } as BubbleObject)
               }}
@@ -84,14 +87,26 @@ export function ComponentPalette({ onAdd }: ComponentPaletteProps) {
       <section>
         <h3 className="mb-2 text-sm font-medium text-muted-foreground">形状</h3>
         <div className="grid grid-cols-3 gap-2">
-          {(['circle', 'heart', 'star'] as ShapeKind[]).map((kind) => (
+          {(
+            ['circle', 'heart', 'star', 'square', 'triangle', 'diamond'] as ShapeKind[]
+          ).map((kind) => (
             <button
               key={kind}
               type="button"
               onClick={() => onAdd(createShapeObject(kind))}
               className="flex h-11 items-center justify-center rounded-xl border border-border text-lg transition-colors hover:border-primary"
             >
-              {kind === 'circle' ? '●' : kind === 'heart' ? '♥' : '★'}
+              {kind === 'circle'
+                ? '●'
+                : kind === 'heart'
+                  ? '♥'
+                  : kind === 'star'
+                    ? '★'
+                    : kind === 'square'
+                      ? '■'
+                      : kind === 'triangle'
+                        ? '▲'
+                        : '◆'}
             </button>
           ))}
         </div>

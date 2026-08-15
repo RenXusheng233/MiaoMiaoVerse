@@ -9,6 +9,21 @@ import type { CanvasObject, ShapeKind } from './schema'
  */
 export const BUBBLE_TEXT_FILL = '#4A3728'
 
+/**
+ * Fold an alpha value into a hex color as an rgba() string, so colors can go
+ * transparent wherever fabric paints (2d fillStyle). Solid colors pass
+ * through unchanged to keep the export bytes minimal.
+ */
+export function fillWithOpacity(fill: string, opacity: number): string {
+  if (opacity >= 1) return fill
+  const hex = fill.replace('#', '')
+  const full =
+    hex.length === 3 ? hex.split('').map((c) => c + c).join('') : hex
+  const n = parseInt(full, 16)
+  if (Number.isNaN(n)) return fill // not a hex color — pass through
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${opacity})`
+}
+
 /** Map a schema object to fabric.js constructor options (pure, testable). */
 export function schemaToFabricOptions(
   obj: CanvasObject,
@@ -43,9 +58,17 @@ export function schemaToFabricOptions(
         text: obj.text,
         fontSize: obj.fontSize,
         // The preset fill paints the rounded container (backgroundColor on a
-        // RoundedTextbox); the text glyphs use the fixed warm ink.
+        // RoundedTextbox); the text glyphs use the fixed warm ink. fillOpacity
+        // is folded into an rgba() string so the container can go transparent.
+        // The border maps to custom bubbleBorder/bubbleBorderWidth props —
+        // fabric's stroke would outline the text glyphs instead of the
+        // container (and FabricObject already owns borderColor).
         fill: BUBBLE_TEXT_FILL,
-        backgroundColor: obj.fill,
+        backgroundColor: fillWithOpacity(obj.fill, obj.fillOpacity),
+        bubbleBorder: obj.stroke,
+        bubbleBorderWidth: obj.strokeWidth,
+        paddingX: obj.paddingX,
+        paddingY: obj.paddingY,
         cornerRadius: obj.cornerRadius,
       }
     case 'emoji':
@@ -58,7 +81,7 @@ export function schemaToFabricOptions(
     case 'shape':
       return {
         ...common,
-        fill: obj.fill,
+        fill: fillWithOpacity(obj.fill, obj.fillOpacity),
         stroke: obj.stroke,
         strokeWidth: obj.strokeWidth,
       }
@@ -87,9 +110,17 @@ export function fabricPropsToSchema(obj: {
   }
 }
 
+// All paths are centered on the origin and sized to a ~160px visual extent,
+// matching the circle's 160px diameter (radius 80) so every shape starts at
+// the same on-canvas size.
 export const SHAPE_PATH: Record<ShapeKind, string> = {
   circle: '', // fabric.Circle
+  // Upright heart (point at the bottom) — the previous path was upside down,
+  // which is why the canvas shape never matched the ♥ palette icon.
   heart:
-    'M 0 10 A 10 10 0 0 1 20 10 C 20 0 0 -10 0 -20 C 0 -10 -20 0 -20 10 A 10 10 0 0 1 0 10 Z',
-  star: 'M 0 -20 L 6 -6 L 20 -6 L 9 3 L 13 18 L 0 9 L -13 18 L -9 3 L -20 -6 L -6 -6 Z',
+    'M 56 16 C 68 6 80 -10 80 -28 C 80 -55 62 -72 36 -72 C 22 -72 12 -68 0 -56 C -12 -68 -22 -72 -36 -72 C -62 -72 -80 -55 -80 -28 C -80 -10 -68 6 -56 16 L 0 72 Z',
+  star: 'M 0 -80 L 24 -24 L 80 -24 L 36 12 L 52 72 L 0 36 L -52 72 L -36 12 L -80 -24 L -24 -24 Z',
+  square: 'M -80 -80 L 80 -80 L 80 80 L -80 80 Z',
+  triangle: 'M 0 -80 L 80 62 L -80 62 Z',
+  diamond: 'M 0 -80 L 80 0 L 0 80 L -80 0 Z',
 }

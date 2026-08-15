@@ -45,6 +45,11 @@ export function PropertyPanel({
   // 自定义 size mode — a panel-local flag: presets are one-click sizes, the
   // custom button reveals width/height inputs instead of applying a size.
   const [customSize, setCustomSize] = useState(false)
+  // Selected background file name. The file input is reset after every pick
+  // (so re-picking the SAME file still fires onChange), which also wipes the
+  // browser's native "未选择任何文件" display — so the name is tracked here
+  // and rendered by us instead of relying on the input's own value.
+  const [bgFileName, setBgFileName] = useState<string | null>(null)
 
   if (!selected) {
     return (
@@ -64,7 +69,13 @@ export function PropertyPanel({
                   onCanvasChange({ width: p.width, height: p.height })
                   setCustomSize(false)
                 }}
-                className="rounded-lg border border-border px-2 py-1.5 text-xs text-foreground transition-colors hover:border-primary"
+                className={
+                  // Highlight the preset matching the current canvas size —
+                  // the default square preset was never visibly selected.
+                  p.width === canvas.width && p.height === canvas.height
+                    ? 'rounded-lg border border-primary px-2 py-1.5 text-xs text-primary'
+                    : 'rounded-lg border border-border px-2 py-1.5 text-xs text-foreground transition-colors hover:border-primary'
+                }
               >
                 {p.label}
               </button>
@@ -124,28 +135,24 @@ export function PropertyPanel({
               <button
                 key={mode}
                 type="button"
-                onClick={() => onCanvasChange({ backgroundMode: mode })}
+                onClick={() => {
+                  onCanvasChange({ backgroundMode: mode })
+                  setBgFileName(null)
+                }}
+                // Mode switching is locked while a background image is up —
+                // delete the image first to re-enable color modes.
+                disabled={canvas.backgroundMode === 'image'}
                 className={
                   mode === canvas.backgroundMode
-                    ? 'rounded-lg border border-primary px-2 py-1 text-xs text-primary'
-                    : 'rounded-lg border border-border px-2 py-1 text-xs text-foreground'
+                    ? 'rounded-lg border border-primary px-2 py-1 text-xs text-primary disabled:opacity-50'
+                    : 'rounded-lg border border-border px-2 py-1 text-xs text-foreground disabled:cursor-not-allowed disabled:opacity-50'
                 }
               >
                 {mode === 'color' ? '纯色' : '渐变'}
               </button>
             ))}
           </div>
-          {canvas.backgroundMode === 'color' ? (
-            <input
-              type="color"
-              key="bg-color"
-              value={canvas.backgroundColor}
-              onChange={(e) =>
-                onCanvasChange({ backgroundColor: e.target.value })
-              }
-              className="h-9 w-full cursor-pointer rounded-lg border border-border"
-            />
-          ) : (
+          {canvas.backgroundMode === 'gradient' ? (
             <div className="flex gap-2">
               <input
                 type="color"
@@ -176,32 +183,73 @@ export function PropertyPanel({
                 className="h-9 flex-1 cursor-pointer rounded-lg border border-border"
               />
             </div>
+          ) : (
+            // Solid-color picker doubles as the disabled stand-in while a
+            // background image is up — it must read as a color mode, not the
+            // gradient pickers that previously leaked into image mode.
+            <input
+              type="color"
+              key="bg-color"
+              value={canvas.backgroundColor}
+              onChange={(e) =>
+                onCanvasChange({ backgroundColor: e.target.value })
+              }
+              disabled={canvas.backgroundMode === 'image'}
+              className="h-9 w-full cursor-pointer rounded-lg border border-border disabled:cursor-not-allowed disabled:opacity-50"
+            />
           )}
-          <label className="block">
+          <div>
             <span className="mb-1 block text-xs text-muted-foreground">
               上传背景图
             </span>
-            <input
-              type="file"
-              key="bg-file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (!file) return
-                const reader = new FileReader()
-                reader.onload = () =>
-                  onCanvasChange({
-                    backgroundMode: 'image',
-                    backgroundImage: String(reader.result),
-                  })
-                reader.readAsDataURL(file)
-                // Reset the input so re-picking the SAME file fires onChange
-                // again (browsers otherwise swallow the duplicate pick).
-                e.target.value = ''
-              }}
-              className="w-full text-xs"
-            />
-          </label>
+            <div className="flex items-center gap-2">
+              <label className="block min-w-0 flex-1 cursor-pointer">
+                <input
+                  type="file"
+                  key="bg-file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    setBgFileName(file.name)
+                    const reader = new FileReader()
+                    reader.onload = () =>
+                      onCanvasChange({
+                        backgroundMode: 'image',
+                        backgroundImage: String(reader.result),
+                      })
+                    reader.readAsDataURL(file)
+                    // Reset the input so re-picking the SAME file fires
+                    // onChange again (browsers otherwise swallow the
+                    // duplicate pick). The name is already in state, so the
+                    // reset can't blank the UI.
+                    e.target.value = ''
+                  }}
+                  className="sr-only"
+                />
+                <span className="block w-full truncate rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-xs text-foreground transition-colors hover:border-primary">
+                  {bgFileName ?? '未选择任何文件'}
+                </span>
+              </label>
+              {canvas.backgroundImage ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Remove the background image: back to solid color, which
+                    // also re-enables the disabled color controls.
+                    onCanvasChange({
+                      backgroundMode: 'color',
+                      backgroundImage: null,
+                    })
+                    setBgFileName(null)
+                  }}
+                  className="shrink-0 rounded-lg border border-border px-2 py-1.5 text-xs text-foreground transition-colors hover:border-destructive hover:text-destructive"
+                >
+                  删除
+                </button>
+              ) : null}
+            </div>
+          </div>
         </section>
 
         <section className="space-y-2">
@@ -325,6 +373,70 @@ export function PropertyPanel({
           </div>
           <label className="flex items-center justify-between">
             <span className="text-xs text-muted-foreground">
+              背景透明度: {Math.round(selected.fillOpacity * 100)}%
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={Math.round(selected.fillOpacity * 100)}
+              onChange={(e) =>
+                patch({ fillOpacity: Number(e.target.value) / 100 })
+              }
+              className="w-32"
+            />
+          </label>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">边框颜色</span>
+            <input
+              type="color"
+              key="bubble-stroke"
+              value={selected.stroke}
+              onChange={(e) => patch({ stroke: e.target.value })}
+              className="h-8 w-12 cursor-pointer rounded border border-border"
+            />
+          </div>
+          <label className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              边框宽: {selected.strokeWidth}
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={12}
+              value={selected.strokeWidth}
+              onChange={(e) => patch({ strokeWidth: Number(e.target.value) })}
+              className="w-32"
+            />
+          </label>
+          <label className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              上下内边距: {selected.paddingY}
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={selected.paddingY}
+              onChange={(e) => patch({ paddingY: Number(e.target.value) })}
+              className="w-32"
+            />
+          </label>
+          <label className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              左右内边距: {selected.paddingX}
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={selected.paddingX}
+              onChange={(e) => patch({ paddingX: Number(e.target.value) })}
+              className="w-32"
+            />
+          </label>
+          <label className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
               圆角: {selected.cornerRadius}
             </span>
             <input
@@ -365,6 +477,21 @@ export function PropertyPanel({
               className="h-8 w-12 cursor-pointer rounded border border-border"
             />
           </div>
+          <label className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              填充透明度: {Math.round(selected.fillOpacity * 100)}%
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={Math.round(selected.fillOpacity * 100)}
+              onChange={(e) =>
+                patch({ fillOpacity: Number(e.target.value) / 100 })
+              }
+              className="w-32"
+            />
+          </label>
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted-foreground">描边色</span>
             <input
@@ -375,6 +502,19 @@ export function PropertyPanel({
               className="h-8 w-12 cursor-pointer rounded border border-border"
             />
           </div>
+          <label className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              边框宽: {selected.strokeWidth}
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={12}
+              value={selected.strokeWidth}
+              onChange={(e) => patch({ strokeWidth: Number(e.target.value) })}
+              className="w-32"
+            />
+          </label>
         </section>
       )}
     </aside>

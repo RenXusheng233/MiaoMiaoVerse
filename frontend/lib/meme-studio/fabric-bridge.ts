@@ -40,34 +40,73 @@ const DEFAULT_CIRCLE_RADIUS = 80
 class RoundedTextbox extends Textbox {
   /** Bubble corner radius — written via set() from schemaToFabricOptions. */
   declare cornerRadius?: number
+  /**
+   * Bubble container border. fabric's own `stroke` outlines the TEXT glyphs,
+   * not the container, so the border is a custom prop painted by
+   * _renderBackground on the rounded rect. (Named bubbleBorder* because
+   * FabricObject already owns `borderColor` — the selection outline.)
+   */
+  declare bubbleBorder?: string
+  declare bubbleBorderWidth?: number
+  /** Container inner padding in px, symmetric per axis. */
+  declare paddingX?: number
+  declare paddingY?: number
 
-  // `cornerRadius` is not a registered fabric prop (no dirty-marking in
-  // _set), but the override reads it every draw — register it so slider
-  // changes on bubbles invalidate the bitmap cache and repaint.
+  // These are not registered fabric props (no dirty-marking in _set), but
+  // the override reads them every draw — register them so panel changes on
+  // bubbles invalidate the bitmap cache and repaint.
   static override get cacheProperties(): string[] {
-    return [...super.cacheProperties, 'cornerRadius']
+    return [
+      ...super.cacheProperties,
+      'cornerRadius',
+      'bubbleBorder',
+      'bubbleBorderWidth',
+      'paddingX',
+      'paddingY',
+    ]
+  }
+
+  // The padded container is painted LARGER than the text box; fabric's
+  // default cache canvas only covers the box and would clip the container.
+  // Pad the cache by the same amount so the rounded rect renders whole.
+  override _getCacheCanvasDimensions() {
+    const d = super._getCacheCanvasDimensions()
+    const canvasZoomX = Math.abs(d.zoomX / this.scaleX)
+    const canvasZoomY = Math.abs(d.zoomY / this.scaleY)
+    const x = d.x + (this.paddingX ?? 0) * 2 * canvasZoomX
+    const y = d.y + (this.paddingY ?? 0) * 2 * canvasZoomY
+    return { ...d, x, y, width: Math.ceil(x) + 2, height: Math.ceil(y) + 2 }
   }
 
   override _renderBackground(ctx: CanvasRenderingContext2D): void {
-    if (!this.backgroundColor) return
     const dim = this._getNonTransformedDimensions()
-    const r = Math.min(this.cornerRadius ?? 0, dim.x / 2, dim.y / 2)
-    ctx.fillStyle = this.backgroundColor
+    const w = dim.x + (this.paddingX ?? 0) * 2
+    const h = dim.y + (this.paddingY ?? 0) * 2
+    const r = Math.min(this.cornerRadius ?? 0, w / 2, h / 2)
+    const x = -w / 2
+    const y = -h / 2
     ctx.beginPath()
     if (ctx.roundRect) {
-      ctx.roundRect(-dim.x / 2, -dim.y / 2, dim.x, dim.y, r)
+      ctx.roundRect(x, y, w, h, r)
     } else {
       // Fallback for browsers without roundRect (Safari < 16).
-      const x = -dim.x / 2
-      const y = -dim.y / 2
       ctx.moveTo(x + r, y)
-      ctx.arcTo(x + dim.x, y, x + dim.x, y + dim.y, r)
-      ctx.arcTo(x + dim.x, y + dim.y, x, y + dim.y, r)
-      ctx.arcTo(x, y + dim.y, x, y, r)
-      ctx.arcTo(x, y, x + dim.x, y, r)
+      ctx.arcTo(x + w, y, x + w, y + h, r)
+      ctx.arcTo(x + w, y + h, x, y + h, r)
+      ctx.arcTo(x, y + h, x, y, r)
+      ctx.arcTo(x, y, x + w, y, r)
       ctx.closePath()
     }
-    ctx.fill()
+    if (this.backgroundColor) {
+      ctx.fillStyle = this.backgroundColor
+      ctx.fill()
+    }
+    const bw = this.bubbleBorderWidth ?? 0
+    if (bw > 0 && this.bubbleBorder) {
+      ctx.strokeStyle = this.bubbleBorder
+      ctx.lineWidth = bw
+      ctx.stroke()
+    }
   }
 }
 
@@ -92,10 +131,26 @@ export class FabricBridge {
 
   private bindEvents() {
     this.canvas.on('selection:created', () => this.emit())
+    // Directly clicking ANOTHER object fires selection:updated (fabric v7
+    // renamed the v6 'selection:changed'; 'selection:created' only fires when
+    // nothing was selected). Without it the property panel kept showing the
+    // previous object's props until a click on empty canvas first cleared
+    // the selection.
+    this.canvas.on('selection:updated', () => this.emit())
     this.canvas.on('selection:cleared', () => this.emit())
     // Covers moves/resizes/rotates AND text edits — IText fires
     // object:modified when editing exits with changes (ITextBehavior).
     this.canvas.on('object:modified', (e) => this.syncFromFabric(e.target))
+  }
+
+  /**
+   * Textbox only auto-GROWS its width (dynamicMinWidth > width), so font size
+   * reductions leave the box wider than the text. Re-measure after text/size
+   * edits and set the width explicitly to shrink it back to fit.
+   */
+  private shrinkToFit(fobj: FabricObject): void {
+    const tb = fobj as unknown as { calcTextWidth(): number; minWidth: number }
+    fobj.set('width', Math.max(tb.calcTextWidth(), tb.minWidth))
   }
 
   /**
@@ -121,8 +176,10 @@ export class FabricBridge {
       // never be textboxes, so they are unreachable here.
       if (obj.type === 'text' || obj.type === 'bubble') {
         obj.text = text
+        this.shrinkToFit(target)
       } else if (obj.type === 'emoji') {
         obj.emoji = text
+        this.shrinkToFit(target)
       }
     }
     this.emit()
@@ -152,23 +209,37 @@ export class FabricBridge {
       FabricImage.fromURL(cfg.backgroundImage)
         .then((img) => {
           if (loadSeq !== this.backgroundLoadSeq) return
-          img.scaleToWidth(cfg.width)
+          // Cover mode: scale to fill BOTH dimensions (aspect-preserving)
+          // and center the overflow. scaleToWidth alone only matched the
+          // width, leaving tall images anchored at the top-left corner
+          // (only their top area visible) and short ones with an empty
+          // band below.
+          const scale = Math.max(cfg.width / img.width, cfg.height / img.height)
+          img.scale(scale)
+          img.set({ originX: 'left', originY: 'top' })
+          img.left = (cfg.width - img.getScaledWidth()) / 2
+          img.top = (cfg.height - img.getScaledHeight()) / 2
           this.canvas.backgroundImage = img
           this.canvas.renderAll()
         })
         .catch(() => undefined) // unreadable URL: keep the previous background
-    } else if (cfg.backgroundMode === 'gradient' && cfg.gradient) {
-      const grad = new Gradient({
-        type: 'linear',
-        coords: { x1: 0, y1: 0, x2: cfg.width, y2: cfg.height },
-        colorStops: [
-          { offset: 0, color: cfg.gradient.from },
-          { offset: 1, color: cfg.gradient.to },
-        ],
-      })
-      this.canvas.backgroundColor = grad
     } else {
-      this.canvas.backgroundColor = cfg.backgroundColor
+      // Leaving image mode (color or gradient): drop the fabric background
+      // image, otherwise it keeps painting over the color we switch to.
+      this.canvas.backgroundImage = undefined
+      if (cfg.backgroundMode === 'gradient' && cfg.gradient) {
+        const grad = new Gradient({
+          type: 'linear',
+          coords: { x1: 0, y1: 0, x2: cfg.width, y2: cfg.height },
+          colorStops: [
+            { offset: 0, color: cfg.gradient.from },
+            { offset: 1, color: cfg.gradient.to },
+          ],
+        })
+        this.canvas.backgroundColor = grad
+      } else {
+        this.canvas.backgroundColor = cfg.backgroundColor
+      }
     }
     this.canvas.renderAll()
   }
@@ -225,6 +296,12 @@ export class FabricBridge {
       // dirty for every cache-relevant key, so ALL panel edits (stroke,
       // strokeWidth, backgroundColor, …) reach the canvas immediately.
       fobj.set(schemaToFabricOptions(this.schema.objects[idx]) as never)
+      // Text-like boxes grow but never shrink on their own — re-measure when
+      // the font size or text changes (see shrinkToFit). `in` guards the
+      // union: fontSize/text only exist on text-like variants.
+      if (fobj instanceof Textbox && ('fontSize' in patch || 'text' in patch)) {
+        this.shrinkToFit(fobj)
+      }
       this.canvas.renderAll()
     }
     this.emit()

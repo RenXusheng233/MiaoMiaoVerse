@@ -48,7 +48,8 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 | `/cats/[id]`   | 猫咪详情：大图/语录/网梗标签/基本信息/适养人群徽章/雷达图 | ✅                          |
 | `/copywriting` | 文案生成：表单 + 三版并行 SSE 流式渲染 + 重生成 + 复制    | ✅                          |
 | `/chat`        | 疗愈问答：聊天式问答 + 流式渲染 + 医疗免责声明            | ✅                          |
-| `/meme`        | 表情包生成                                                | 待开发(后端已就绪)         |
+| `/meme-studio` | 表情包工作室：三栏画布编辑器（组件/画布/属性面板）+ PNG 导出 | ✅                          |
+| `/meme`        | 表情包生成(多模态自动生成)                                 | 待开发(后端已就绪)         |
 | `/cats`        | 品种列表页(带筛选)                                        | 规划中(当前首页画廊已覆盖) |
 
 ## 常用命令
@@ -74,18 +75,21 @@ frontend/
 │   ├── cats/[id]/            # 猫咪详情页 + not-found
 │   ├── copywriting/          # 文案生成页 + loading
 │   ├── chat/                 # 疗愈问答页 + loading
+│   ├── meme-studio/          # 表情包工作室页 + loading
 │   └── globals.css           # 全部设计令牌(oklch)
 ├── components/
 │   ├── ui/                   # shadcn 生成组件(button/card/input/select/combobox…)
 │   ├── home/                 # hero / quick-links / cat-gallery / daily-cat-widget
 │   ├── cats/                 # cat-detail / radar-chart(自绘 SVG)
 │   ├── copywriting/          # copy-form / copy-card / copy-workspace
-│   └── chat/                 # chat-workspace / chat-message / chat-input
+│   ├── chat/                 # chat-workspace / chat-message / chat-input
+│   └── meme-studio/          # 三栏编辑器: component-palette / canvas-stage / property-panel / studio-workspace
 ├── lib/
 │   ├── api.ts                # 全部后端 API 封装(no-store)
 │   ├── sse.ts                # 手写 fetch 流式 SSE 解析器
 │   ├── utils.ts              # cn() 类合并
-│   └── types/                # 与后端对齐的类型定义
+│   ├── types/                # 与后端对齐的类型定义
+│   └── meme-studio/          # schema / presets / canvas-size / fabric-mapping / fabric-bridge
 └── docs/superpowers/         # 各模块设计文档(specs)与实现计划(plans)
 ```
 
@@ -96,6 +100,7 @@ frontend/
 - **数据获取**：API 封装统一 `cache: "no-store"`(本项目数据实时变化，不做缓存);RSC 页面服务端获取数据，客户端组件只做交互
 - **图片域名**：外部图源需在 `next.config.ts` 的 `remotePatterns` 配置(`cdn2.thecatapi.com` 已配);`next/image` 的 `fill` 要求**直接父元素**为 `relative/absolute/fixed`
 - **SSE**：EventSource 不支持 POST，统一用 `lib/sse.ts` 的 `streamSSE`(手写解析，chat 页面复用)
+- **Fabric.js v7**(meme-studio)：无 `fabric` 命名空间，全部命名导入；选中切换事件是 `selection:updated`(v6 的 `selection:changed` 已改名)；`Textbox` 宽度只增不减(缩小字号需手动重测 `calcTextWidth()`，见 FabricBridge `shrinkToFit`)
 - **样式约定**：奶油马卡龙配色、`font-heading`(ZCOOL KuaiLe)标题、小圆角
 
 ## 文档索引
