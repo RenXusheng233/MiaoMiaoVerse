@@ -11,6 +11,7 @@
 | 3.3 文案生成 | 三版并行 SSE 流式文案，单版重生成，一键复制                 | ✅ 已完成            |
 | 3.4 表情包   | 上传图片 + 文字生成叠加方案(规则引擎占位，多模态待接入)     | 后端 ✅ ，前端待开发 |
 | 3.5 疗愈问答 | 聊天式问答，闲聊/医疗双路由，医疗免责声明                   | ✅ 已完成            |
+| 3.6 表情包工作室 | 低代码画布编辑器：三栏布局，组件拖拽拼装，Schema 驱动，导出 PNG，仅支持 PC 端 | ✅ 已完成 |
 
 ## 技术架构
 
@@ -69,8 +70,8 @@ MiaoMiaoVerse/
 │   └── docs/           # 设计文档与实现计划
 └── frontend/           # Next.js 前端(README 见 frontend/README.md)
     ├── app/            # 页面与路由
-    ├── components/     # 组件(ui/home/cats/copywriting/chat)
-    ├── lib/            # API 封装，SSE 解析器，类型
+    ├── components/     # 组件(ui/home/cats/copywriting/chat/meme-studio)
+    ├── lib/            # API 封装，SSE 解析器，meme-studio 引擎，类型
     └── docs/           # 设计文档与实现计划
 ```
 

@@ -1,12 +1,17 @@
 // Property panel — the right-hand inspector. With nothing selected it edits
 // the global canvas config (size presets, background, corner radius); with an
-// object selected it edits that object's props. Every change is emitted via
-// onCanvasChange / onObjectChange — the workspace routes them through the
-// FabricBridge, never mutating the schema directly.
+// object selected, the per-type field registry (property-fields.ts) drives a
+// generic renderer. Every change is emitted via onCanvasChange /
+// onObjectChange — the workspace routes them through the FabricBridge, never
+// mutating the schema directly.
 'use client'
 
 import { useState } from 'react'
 import { CANVAS_SIZE_PRESETS } from '@/lib/meme-studio/canvas-size'
+import {
+  OBJECT_PROPERTY_CONFIGS,
+  type ObjectFieldConfig,
+} from '@/lib/meme-studio/property-fields'
 import type {
   CanvasConfig,
   CanvasObject,
@@ -30,6 +35,80 @@ const MAX_SIZE = 4096
 function clampSize(v: number): number {
   if (Number.isNaN(v)) return MIN_SIZE
   return Math.min(MAX_SIZE, Math.max(MIN_SIZE, Math.round(v)))
+}
+
+interface FieldEditorProps {
+  field: ObjectFieldConfig
+  objectId: string
+  value: unknown
+  onChange: (key: string, value: string | number) => void
+}
+
+// Generic field renderer — the only place that paints field kinds. The config
+// registry (property-fields.ts) guarantees keys exist on the schema object at
+// authoring time; here keys are treated as plain strings.
+function FieldEditor({ field, objectId, value, onChange }: FieldEditorProps) {
+  switch (field.kind) {
+    case 'textarea':
+      return (
+        <label className="block">
+          <span className="mb-1 block text-xs text-muted-foreground">
+            {field.label}
+          </span>
+          <textarea
+            value={typeof value === 'string' ? value : ''}
+            onChange={(e) => onChange(field.key, e.target.value)}
+            rows={3}
+            className={BASE_INPUT}
+          />
+        </label>
+      )
+    case 'slider': {
+      // Opacity fields store 0–1 but edit 0–100 — fromSchema/toSchema convert
+      // at the boundaries; format renders the label suffix.
+      const schemaValue = typeof value === 'number' ? value : field.min
+      const sliderValue = field.fromSchema
+        ? field.fromSchema(schemaValue)
+        : schemaValue
+      const display = field.format ? field.format(sliderValue) : sliderValue
+      return (
+        <label className="flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">
+            {field.label}: {display}
+          </span>
+          <input
+            type="range"
+            min={field.min}
+            max={field.max}
+            step={field.step ?? 1}
+            value={sliderValue}
+            onChange={(e) => {
+              const raw = Number(e.target.value)
+              onChange(field.key, field.toSchema ? field.toSchema(raw) : raw)
+            }}
+            className="w-32"
+          />
+        </label>
+      )
+    }
+    case 'color':
+      // objectId in the key remounts the input per selection — browsers keep
+      // stale picker state on a reused DOM node otherwise.
+      return (
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">{field.label}</span>
+          <input
+            type="color"
+            key={`${objectId}-${field.key}`}
+            value={typeof value === 'string' ? value : '#000000'}
+            onChange={(e) => onChange(field.key, e.target.value)}
+            className="h-8 w-12 cursor-pointer rounded border border-border"
+          />
+        </div>
+      )
+    default:
+      return null
+  }
 }
 
 export function PropertyPanel({
@@ -271,252 +350,30 @@ export function PropertyPanel({
     )
   }
 
-  const patch = (p: Partial<CanvasObject>) => onObjectChange(selected.id, p)
+  // Object view: the selected component's fields come from the per-type
+  // registry (property-fields.ts) — declarative config, compiler-checked
+  // against the schema union. FieldEditor renders each entry generically.
+  const config = OBJECT_PROPERTY_CONFIGS[selected.type]
 
   return (
     <aside className="w-72 shrink-0 space-y-4 overflow-y-auto border-l border-border p-4">
-      <h2 className="font-heading text-lg text-foreground">
-        {selected.type === 'text'
-          ? '文本'
-          : selected.type === 'bubble'
-            ? '气泡'
-            : selected.type === 'emoji'
-              ? '贴纸'
-              : '形状'}
-      </h2>
-      {(selected.type === 'text' || selected.type === 'bubble') && (
-        <section className="space-y-2">
-          <label className="block">
-            <span className="mb-1 block text-xs text-muted-foreground">
-              文字
-            </span>
-            <textarea
-              value={selected.text}
-              onChange={(e) => patch({ text: e.target.value })}
-              rows={3}
-              className={BASE_INPUT}
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-xs text-muted-foreground">
-              字号: {selected.fontSize}
-            </span>
-            <input
-              type="range"
-              min={12}
-              max={200}
-              value={selected.fontSize}
-              onChange={(e) => patch({ fontSize: Number(e.target.value) })}
-              className="w-full"
-            />
-          </label>
-        </section>
-      )}
-      {selected.type === 'text' && (
-        <section className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">文字颜色</span>
-            <input
-              type="color"
-              key="text-fill"
-              value={selected.fill}
-              onChange={(e) => patch({ fill: e.target.value })}
-              className="h-8 w-12 cursor-pointer rounded border border-border"
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">描边颜色</span>
-            <input
-              type="color"
-              key="text-stroke"
-              value={selected.stroke}
-              onChange={(e) => patch({ stroke: e.target.value })}
-              className="h-8 w-12 cursor-pointer rounded border border-border"
-            />
-          </div>
-          <label className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              描边宽: {selected.strokeWidth}
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={12}
-              value={selected.strokeWidth}
-              onChange={(e) => patch({ strokeWidth: Number(e.target.value) })}
-              className="w-32"
-            />
-          </label>
-          <label className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">文本底色</span>
-            <input
-              type="color"
-              key="text-bg"
-              value={selected.backgroundColor ?? '#000000'}
-              onChange={(e) => patch({ backgroundColor: e.target.value })}
-              className="h-8 w-12 cursor-pointer rounded border border-border"
-            />
-          </label>
-        </section>
-      )}
-      {selected.type === 'bubble' && (
-        <section className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">填充色</span>
-            <input
-              type="color"
-              key="bubble-fill"
-              value={selected.fill}
-              onChange={(e) => patch({ fill: e.target.value })}
-              className="h-8 w-12 cursor-pointer rounded border border-border"
-            />
-          </div>
-          <label className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              背景透明度: {Math.round(selected.fillOpacity * 100)}%
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={Math.round(selected.fillOpacity * 100)}
-              onChange={(e) =>
-                patch({ fillOpacity: Number(e.target.value) / 100 })
-              }
-              className="w-32"
-            />
-          </label>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">边框颜色</span>
-            <input
-              type="color"
-              key="bubble-stroke"
-              value={selected.stroke}
-              onChange={(e) => patch({ stroke: e.target.value })}
-              className="h-8 w-12 cursor-pointer rounded border border-border"
-            />
-          </div>
-          <label className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              边框宽: {selected.strokeWidth}
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={12}
-              value={selected.strokeWidth}
-              onChange={(e) => patch({ strokeWidth: Number(e.target.value) })}
-              className="w-32"
-            />
-          </label>
-          <label className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              上下内边距: {selected.paddingY}
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={selected.paddingY}
-              onChange={(e) => patch({ paddingY: Number(e.target.value) })}
-              className="w-32"
-            />
-          </label>
-          <label className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              左右内边距: {selected.paddingX}
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={selected.paddingX}
-              onChange={(e) => patch({ paddingX: Number(e.target.value) })}
-              className="w-32"
-            />
-          </label>
-          <label className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              圆角: {selected.cornerRadius}
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={80}
-              value={selected.cornerRadius}
-              onChange={(e) => patch({ cornerRadius: Number(e.target.value) })}
-              className="w-32"
-            />
-          </label>
-        </section>
-      )}
-      {selected.type === 'emoji' && (
-        <label className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            字号: {selected.fontSize}
-          </span>
-          <input
-            type="range"
-            min={24}
-            max={300}
-            value={selected.fontSize}
-            onChange={(e) => patch({ fontSize: Number(e.target.value) })}
-            className="w-32"
+      <h2 className="font-heading text-lg text-foreground">{config.title}</h2>
+      <section className="space-y-2">
+        {config.fields.map((field) => (
+          <FieldEditor
+            key={field.key}
+            field={field}
+            objectId={selected.id}
+            // Dynamic key read — Reflect.get keeps the union object intact
+            // (an `as Record` cast would trip the interface index-signature
+            // check).
+            value={Reflect.get(selected, field.key)}
+            onChange={(key, v) =>
+              onObjectChange(selected.id, { [key]: v } as Partial<CanvasObject>)
+            }
           />
-        </label>
-      )}
-      {selected.type === 'shape' && (
-        <section className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">填充色</span>
-            <input
-              type="color"
-              key="shape-fill"
-              value={selected.fill}
-              onChange={(e) => patch({ fill: e.target.value })}
-              className="h-8 w-12 cursor-pointer rounded border border-border"
-            />
-          </div>
-          <label className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              填充透明度: {Math.round(selected.fillOpacity * 100)}%
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={Math.round(selected.fillOpacity * 100)}
-              onChange={(e) =>
-                patch({ fillOpacity: Number(e.target.value) / 100 })
-              }
-              className="w-32"
-            />
-          </label>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">描边色</span>
-            <input
-              type="color"
-              key="shape-stroke"
-              value={selected.stroke}
-              onChange={(e) => patch({ stroke: e.target.value })}
-              className="h-8 w-12 cursor-pointer rounded border border-border"
-            />
-          </div>
-          <label className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              边框宽: {selected.strokeWidth}
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={12}
-              value={selected.strokeWidth}
-              onChange={(e) => patch({ strokeWidth: Number(e.target.value) })}
-              className="w-32"
-            />
-          </label>
-        </section>
-      )}
+        ))}
+      </section>
     </aside>
   )
 }
