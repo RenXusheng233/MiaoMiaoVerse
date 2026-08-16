@@ -88,7 +88,14 @@ export function ComponentPalette({ onAdd }: ComponentPaletteProps) {
         <h3 className="mb-2 text-sm font-medium text-muted-foreground">形状</h3>
         <div className="grid grid-cols-3 gap-2">
           {(
-            ['circle', 'heart', 'star', 'square', 'triangle', 'diamond'] as ShapeKind[]
+            [
+              'circle',
+              'heart',
+              'star',
+              'square',
+              'triangle',
+              'diamond',
+            ] as ShapeKind[]
           ).map((kind) => (
             <button
               key={kind}

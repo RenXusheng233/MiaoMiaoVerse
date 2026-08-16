@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
 import {
   Select,
   SelectGroup,
@@ -230,9 +231,17 @@ export function CopyForm({
       >
         生成文案
       </Button>
-      {!value.cat_name.trim() ? (
-        <p className="text-sm text-muted-foreground">给猫咪起个名字吧</p>
-      ) : null}
+      {/* The hint is always rendered — visibility toggles instead of unmount
+          so the form height (and the right-side card frames that stretch to
+          match it) never jump when a name is typed. */}
+      <p
+        className={cn(
+          'text-sm font-semibold text-destructive',
+          value.cat_name.trim() && 'invisible',
+        )}
+      >
+        给猫咪起个名字吧
+      </p>
     </div>
   )
 }

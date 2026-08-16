@@ -18,7 +18,12 @@ export function fillWithOpacity(fill: string, opacity: number): string {
   if (opacity >= 1) return fill
   const hex = fill.replace('#', '')
   const full =
-    hex.length === 3 ? hex.split('').map((c) => c + c).join('') : hex
+    hex.length === 3
+      ? hex
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : hex
   const n = parseInt(full, 16)
   if (Number.isNaN(n)) return fill // not a hex color — pass through
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${opacity})`

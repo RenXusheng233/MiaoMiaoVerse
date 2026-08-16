@@ -7,12 +7,7 @@ import type { BubblePresetId } from './presets'
 
 export type CanvasObjectType = 'text' | 'bubble' | 'emoji' | 'shape'
 export type ShapeKind =
-  | 'circle'
-  | 'heart'
-  | 'star'
-  | 'square'
-  | 'triangle'
-  | 'diamond'
+  'circle' | 'heart' | 'star' | 'square' | 'triangle' | 'diamond'
 export type BackgroundMode = 'color' | 'gradient' | 'image'
 
 export interface BaseObject {

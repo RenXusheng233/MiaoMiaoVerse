@@ -26,15 +26,20 @@ export function HeroSection({ cat }: HeroSectionProps) {
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-[90vh] min-h-140 w-full flex-col items-center justify-center overflow-hidden bg-linear-to-b from-secondary via-background to-background"
+      className="relative flex h-[55vh] min-h-100 w-full flex-col items-center justify-center overflow-hidden bg-linear-to-b from-secondary via-background to-background"
     >
+      {/* Clouds sit in a spread-out grid like the paw layer below, not pinned
+          to symmetric corners — two diagonal cells with jitter offsets and
+          different sizes read as casually scattered. */}
       <motion.div
         style={{ y: cloudsY }}
-        className="pointer-events-none absolute inset-x-0 top-10 flex justify-between px-8 text-6xl opacity-40"
+        className="pointer-events-none absolute inset-0 grid grid-cols-3 grid-rows-3 place-items-center text-6xl opacity-40"
         aria-hidden
       >
-        <span>☁️</span>
-        <span>☁️</span>
+        <span className="translate-x-12 translate-y-2 text-5xl">☁️</span>
+        <span className="col-start-3 row-start-1 -translate-x-12 translate-y-6 text-7xl">
+          ☁️
+        </span>
       </motion.div>
 
       <motion.div
