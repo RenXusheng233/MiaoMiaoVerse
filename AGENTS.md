@@ -93,3 +93,33 @@ No `.env` files configured yet. When adding:
 - **`@base-ui/react` ≠ Radix UI.** shadcn/ui uses `@base-ui/react` as its headless primitive layer — Radix prop APIs do not apply.
 - **Tailwind v4** is CSS-first: no `tailwind.config.*` exists or should be created. All theme customization belongs in `app/globals.css`.
 - **No tests** are set up yet — no test framework or scripts exist.
+
+## Workflow
+
+- Before modifying code, inspect the relevant files and existing patterns.
+- Keep changes minimal and focused.
+- Use English for code comments and commit messages.
+- Run the relevant lint, build, or test commands after changes.
+- Do not modify `.env` files unless explicitly requested.
+- Never commit secrets, API keys, or local environment files.
+
+## Git
+
+- Work on feature or development branches.
+- Do not commit directly to `main`, `master`, or `production`.
+- Use Conventional Commits for commit messages.
+- Before committing, inspect `git diff` and verify the changed files.
+
+## Development Commands
+
+Run commands from the project root.
+
+| Task               | Command                |
+| ------------------ | ---------------------- |
+| Start both servers | `bun dev`              |
+| Frontend only      | `bun run dev:frontend` |
+| Backend only       | `bun run dev:backend`  |
+
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8000
+- Backend Swagger: http://localhost:8000/docs
