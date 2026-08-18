@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, ZCOOL_KuaiLe } from 'next/font/google'
+import { Geist, Geist_Mono, Space_Grotesk } from 'next/font/google'
 import Script from 'next/script'
 
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -18,9 +18,8 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-const zcoolKuaiLe = ZCOOL_KuaiLe({
-  variable: '--font-zcool-kuaile',
-  weight: '400',
+const spaceGrotesk = Space_Grotesk({
+  variable: '--font-space-grotesk',
   subsets: ['latin'],
 })
 
@@ -41,7 +40,7 @@ export default function RootLayout({
       className={cn(
         geistSans.variable,
         geistMono.variable,
-        zcoolKuaiLe.variable,
+        spaceGrotesk.variable,
         'h-full antialiased',
       )}
       suppressHydrationWarning
