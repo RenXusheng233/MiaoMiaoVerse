@@ -5,8 +5,9 @@ import { useEffect, useRef } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
+  persistTheme,
+  readStoredTheme,
   resolveTheme,
-  THEME_STORAGE_KEY,
   type ResolvedTheme,
 } from '@/lib/theme'
 
@@ -15,12 +16,20 @@ function applyTheme(theme: ResolvedTheme) {
   document.documentElement.style.colorScheme = theme
 }
 
+function getBrowserStorage(): Storage | null {
+  try {
+    return window.localStorage
+  } catch {
+    return null
+  }
+}
+
 export function ThemeToggle() {
   const hasManualTheme = useRef(false)
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY)
+    const storedTheme = readStoredTheme(getBrowserStorage())
 
     if (storedTheme === 'light' || storedTheme === 'dark') {
       hasManualTheme.current = true
@@ -47,7 +56,7 @@ export function ThemeToggle() {
       ? 'light'
       : 'dark'
 
-    localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
+    persistTheme(getBrowserStorage(), nextTheme)
     hasManualTheme.current = true
     applyTheme(nextTheme)
   }

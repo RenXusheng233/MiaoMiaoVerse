@@ -121,8 +121,8 @@ function DailyCatPanelContent({
             alt={data.breed.name_zh}
             fill
             sizes="(max-width: 1024px) 100vw, 45vw"
+            loading="lazy"
             className="object-cover transition-transform duration-300 motion-safe:group-hover:scale-[1.03] motion-safe:group-focus-visible:scale-[1.03] motion-reduce:transition-none"
-            priority
           />
           <span className="absolute inset-x-5 top-5 flex items-center justify-between font-mono text-[0.65rem] tracking-[0.16em] text-overlay-foreground/80 uppercase drop-shadow-sm">
             <span>MMV / 03</span>

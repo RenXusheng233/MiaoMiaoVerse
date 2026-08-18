@@ -22,17 +22,13 @@ export default function Loading() {
       </section>
 
       <section
-        className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-5 px-6 py-16 lg:grid-cols-12 lg:auto-rows-[minmax(13rem,auto)]"
+        className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-4 px-6 py-12 sm:grid-cols-3"
         aria-hidden="true"
       >
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className={cn(
-              'min-h-56 animate-pulse rounded-2xl bg-muted motion-reduce:animate-none lg:min-h-0',
-              i === 0 && 'lg:col-span-7 lg:row-span-2',
-              i > 0 && 'lg:col-span-5',
-            )}
+            className="h-36 animate-pulse rounded-xl bg-muted motion-reduce:animate-none"
           />
         ))}
       </section>

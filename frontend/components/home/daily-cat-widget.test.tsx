@@ -48,5 +48,7 @@ describe('DailyCatWidget', () => {
     expect(markup).toContain('换一只')
     expect(markup).toContain('href="/cats/ragdoll"')
     expect(markup).toContain('查看详情')
+    expect(markup).toContain('loading="lazy"')
+    expect(markup).not.toContain('rel="preload"')
   })
 })

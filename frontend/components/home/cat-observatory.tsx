@@ -1,9 +1,12 @@
 'use client'
 
 import Image from 'next/image'
+import { Pause, Play } from 'lucide-react'
+import { useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 
 import type { CatBreed } from '@/lib/types/cat'
+import { cn } from '@/lib/utils'
 
 interface CatObservatoryProps {
   cat: CatBreed
@@ -14,6 +17,7 @@ const EYE_CLIP_PATH =
 
 export function CatObservatory({ cat }: CatObservatoryProps) {
   const shouldReduceMotion = useReducedMotion()
+  const [isScanPaused, setIsScanPaused] = useState(false)
 
   return (
     <article
@@ -80,11 +84,17 @@ export function CatObservatory({ cat }: CatObservatoryProps) {
             className="pointer-events-none absolute inset-0 bg-signal/10"
           />
 
-          <motion.div
+          <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-[-28%] text-signal"
-            animate={shouldReduceMotion ? undefined : { rotate: 360 }}
-            transition={{ duration: 18, ease: 'linear', repeat: Infinity }}
+            className={cn(
+              'pointer-events-none absolute inset-[-28%] text-signal',
+              shouldReduceMotion
+                ? 'animate-none'
+                : 'motion-safe:animate-[spin_18s_linear_infinite]',
+            )}
+            style={{
+              animationPlayState: isScanPaused ? 'paused' : 'running',
+            }}
           >
             <svg
               aria-hidden="true"
@@ -100,8 +110,22 @@ export function CatObservatory({ cat }: CatObservatoryProps) {
                 strokeLinecap="round"
               />
             </svg>
-          </motion.div>
+          </div>
         </div>
+
+        <button
+          type="button"
+          aria-label={isScanPaused ? '恢复扫描' : '暂停扫描'}
+          aria-pressed={isScanPaused}
+          onClick={() => setIsScanPaused((paused) => !paused)}
+          className="absolute right-[8%] top-[8%] z-20 inline-flex size-8 items-center justify-center rounded-full border border-grid-line bg-surface/90 text-muted-foreground shadow-panel transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal motion-reduce:transition-none"
+        >
+          {isScanPaused ? (
+            <Play aria-hidden="true" className="size-3.5" />
+          ) : (
+            <Pause aria-hidden="true" className="size-3.5" />
+          )}
+        </button>
 
         <svg
           aria-hidden="true"
