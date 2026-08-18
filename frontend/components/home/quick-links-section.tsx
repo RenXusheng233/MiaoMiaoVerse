@@ -60,7 +60,7 @@ export function QuickLinksSection() {
         >
           <Card
             className={cn(
-              'h-full min-h-56 border border-grid-line bg-surface text-foreground shadow-panel transition-[transform,border-color,box-shadow] duration-300 ease-out group-hover:-translate-y-1 group-hover:border-signal group-hover:shadow-[0_0_0_1px_var(--glow),var(--panel-shadow)] group-focus-visible:-translate-y-1 group-focus-visible:border-signal group-focus-visible:shadow-[0_0_0_1px_var(--glow),var(--panel-shadow)] motion-reduce:transform-none motion-reduce:transition-none lg:min-h-0',
+              'h-full min-h-56 border border-grid-line bg-surface text-foreground shadow-panel transition-[transform,border-color,box-shadow] duration-200 ease-out group-hover:-translate-y-1 group-hover:border-signal group-hover:shadow-[0_0_0_1px_var(--glow),var(--panel-shadow)] group-focus-visible:-translate-y-1 group-focus-visible:border-signal group-focus-visible:shadow-[0_0_0_1px_var(--glow),var(--panel-shadow)] motion-reduce:transform-none motion-reduce:transition-none lg:min-h-0',
               link.className,
             )}
           >
@@ -71,7 +71,7 @@ export function QuickLinksSection() {
                 </div>
                 <ArrowUpRight
                   aria-hidden="true"
-                  className="size-5 text-signal-secondary transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
+                  className="size-5 text-signal-secondary transition-transform duration-200 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
                 />
               </div>
               <div className="space-y-2">
