@@ -1,5 +1,11 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, ZCOOL_KuaiLe } from 'next/font/google'
+import Script from 'next/script'
+
+import { ThemeToggle } from '@/components/theme-toggle'
+import { cn } from '@/lib/utils'
+import { themeBootstrapScript } from '@/lib/theme'
+
 import './globals.css'
 
 const geistSans = Geist({
@@ -32,9 +38,21 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${geistSans.variable} ${geistMono.variable} ${zcoolKuaiLe.variable} h-full antialiased`}
+      className={cn(
+        geistSans.variable,
+        geistMono.variable,
+        zcoolKuaiLe.variable,
+        'h-full antialiased',
+      )}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <ThemeToggle />
+        <Script id="theme-bootstrap" strategy="beforeInteractive">
+          {themeBootstrapScript}
+        </Script>
+      </body>
     </html>
   )
 }
