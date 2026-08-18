@@ -45,7 +45,7 @@ uvicorn main:app --reload        # → http://localhost:8000
 ```
 
 - 接口文档(Swagger)：http://localhost:8000/docs
-- **启动时自动**：建表(`create_all`)+ 空表导入种子数据(cat_breeds 11 品种 + knowledge_docs 18 篇，含预计算 embedding)
+- **启动时自动**：建表(`create_all`)+ 空表导入种子数据(cat_breeds 20 品种 + knowledge_docs 18 篇，含预计算 embedding)
 
 ## 常用命令速查
 
@@ -60,12 +60,18 @@ uvicorn main:app --reload        # → http://localhost:8000
 #   · 绝不插入文件外的新数据、绝不复活已删除的行、绝不删除接口新增的数据
 uv run python -m scripts.seed_db
 
+# 补齐种子文件中存在、数据库中缺失的猫咪品种
+#   · 保留已有记录及其 ai_scores
+#   · 不删除通过 API 创建的记录
+#   · 可重复执行，第二次新增数为 0
+uv run python -m scripts.seed_db --insert-missing
+
 # 重置数据库(清空 cat_breeds + knowledge_docs 后按种子文件重建)
 #   ⚠️ 丢弃所有通过接口新增/修改的数据,回到文件基线
 uv run python -m scripts.seed_db --reset
 ```
 
-**日常工作流**：改 `data/cats.py` 或 `data/knowledge.py` 里的种子数据 → 跑 `uv run python -m scripts.seed_db` 同步到数据库 → 前端刷新即生效。
+**日常工作流**：修改已有种子字段后运行普通 sync；新增基线品种时显式运行 `uv run python -m scripts.seed_db --insert-missing`；前端刷新后生效。
 
 ### AI 雷达分
 
@@ -89,6 +95,12 @@ docker exec postgres-miaomiao-db psql -U $PGUSER -d cats -c "SELECT id, name_zh 
 ```bash
 uv add <pkg>      # 声明式安装(更新 pyproject.toml + uv.lock)
 uv sync           # 按锁文件还原环境
+```
+
+### 测试
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
 ```
 
 ## API 概览
@@ -128,6 +140,7 @@ backend/
 
 - **数据库是唯一权威**：运行时一切读写走 PostgreSQL;`data/` 下文件是种子基准(仅首次导入与 sync/reset 时读取)
 - **增删改品种/文档的正规途径是管理接口**(`POST/PUT/DELETE`)，不是改文件
+- `--insert-missing` 仅用于发布新增基线品种，不会恢复从数据库删除的非本次基线记录
 - 雷达分(`ai_scores`)由 `POST /api/cats/{id}/radar-scores` 或 `generate_radar.py` 管理
 - 检索阈值：pgvector 余弦距离 0.55(与 bge-small-zh 512 维匹配)
 

@@ -3,6 +3,8 @@
 Usage (from backend/):
     uv run python -m scripts.seed_db            # --sync: empty table -> import all;
                                                 #         non-empty -> update existing rows only
+    uv run python -m scripts.seed_db --insert-missing
+                                                # sync + insert missing seed rows
     uv run python -m scripts.seed_db --reset    # truncate then import from the seed file
 
 Authority model: the DB is the single authority. --sync NEVER inserts rows for
@@ -10,17 +12,19 @@ breeds missing from the DB (use POST /api/cats instead) and NEVER deletes rows
 (use DELETE /api/cats); it only refreshes the fields of existing rows. The same
 applies to knowledge docs (use POST /api/knowledge-docs / DELETE instead), with
 one difference: when a knowledge doc's content is refreshed, its embedding is
-recomputed, because the embedding is a pure derivation of the content.
+recomputed, because the embedding is a pure derivation of the content. The
+explicit --insert-missing option adds only missing cat seed rows and leaves API-
+created rows untouched.
 """
 
 import argparse
 import logging
 
-from sqlmodel import Session, select
+from sqlmodel import Session, SQLModel, select
 
 from data.cats import CAT_BREEDS
 from data.knowledge import KNOWLEDGE_DOCS
-from db import _load_legacy_ai_scores, engine, init_db
+from db import _load_legacy_ai_scores, engine
 from models.cat import CatBreedRow
 from models.knowledge import KnowledgeDocRow
 from services.knowledge import _get_embedder
@@ -45,21 +49,25 @@ def _row_from_seed(breed, ai_scores: dict | None) -> CatBreedRow:
     )
 
 
-def _sync(session: Session) -> None:
+def _sync(session: Session, insert_missing: bool = False) -> None:
     rows = {r.id: r for r in session.exec(select(CatBreedRow)).all()}
     if not rows:
         # First import: full seed including legacy AI scores.
-        ai = _load_legacy_ai_scores()
+        ai = {} if insert_missing else _load_legacy_ai_scores()
         for breed in CAT_BREEDS:
             session.add(_row_from_seed(breed, ai.get(breed.id)))
         session.commit()
         print(f"Imported {len(CAT_BREEDS)} breeds (table was empty).")
         return
 
-    updated = skipped = 0
+    updated = inserted = skipped = 0
     for breed in CAT_BREEDS:
         row = rows.get(breed.id)
         if row is None:
+            if insert_missing:
+                session.add(_row_from_seed(breed, None))
+                inserted += 1
+                continue
             print(f"[skip] {breed.id} not in DB — use POST /api/cats or --reset to insert")
             skipped += 1
             continue
@@ -77,7 +85,10 @@ def _sync(session: Session) -> None:
         session.add(row)
         updated += 1
     session.commit()
-    print(f"Synced {updated} breeds, skipped {skipped} (not in DB).")
+    if insert_missing:
+        print(f"Synced {updated} breeds, inserted {inserted}, skipped {skipped}.")
+    else:
+        print(f"Synced {updated} breeds, skipped {skipped} (not in DB).")
 
 
 def _reset(session: Session) -> None:
@@ -156,24 +167,33 @@ def _reset_knowledge(session: Session) -> None:
     print(f"Reset: re-imported {len(KNOWLEDGE_DOCS)} knowledge docs from the seed file.")
 
 
-def main() -> None:
+def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="seed_db",
         description="Sync or reset cat_breeds and knowledge_docs from the seed files.",
     )
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--insert-missing", action="store_true",
+        help="Insert cat breeds present in the seed file but missing from the DB",
+    )
+    mode.add_argument(
         "--reset", action="store_true",
         help="Truncate both tables and re-import the seed files (drops API-created rows)",
     )
-    args = parser.parse_args()
+    return parser
 
-    init_db()
+
+def main() -> None:
+    args = _build_parser().parse_args()
+
+    SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         if args.reset:
             _reset(session)
             _reset_knowledge(session)
         else:
-            _sync(session)
+            _sync(session, insert_missing=args.insert_missing)
             _sync_knowledge(session)
 
 
