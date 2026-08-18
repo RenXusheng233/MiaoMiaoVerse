@@ -1,17 +1,25 @@
 import Link from 'next/link'
 import {
+  ArrowUpRight,
+  ImagePlus,
+  MessageCircle,
+  PenLine,
+  type LucideIcon,
+} from 'lucide-react'
+import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 
 interface QuickLink {
   href: string
   title: string
   description: string
-  gradientFrom: string
-  gradientTo: string
+  icon: LucideIcon
+  className: string
 }
 
 const QUICK_LINKS: QuickLink[] = [
@@ -19,46 +27,57 @@ const QUICK_LINKS: QuickLink[] = [
     href: '/chat',
     title: 'AI 疗愈问答',
     description: '有什么烦心事？跟猫咪 AI 聊聊，治愈一下。',
-    gradientFrom: 'oklch(0.82 0.12 55)',
-    gradientTo: 'oklch(0.92 0.08 95)',
+    icon: MessageCircle,
+    className: 'lg:col-span-7 lg:row-span-2',
   },
   {
     href: '/meme-studio',
     title: '表情包工作室',
     description: '拖拽拼装文字与贴纸，创作专属表情包。',
-    gradientFrom: 'oklch(0.85 0.09 175)',
-    gradientTo: 'oklch(0.85 0.1 230)',
+    icon: ImagePlus,
+    className: 'lg:col-span-5',
   },
   {
     href: '/copywriting',
     title: '朋友圈文案神器',
     description: '三种风格文案任你选，一键复制发圈。',
-    gradientFrom: 'oklch(0.82 0.11 10)',
-    gradientTo: 'oklch(0.78 0.14 30)',
+    icon: PenLine,
+    className: 'lg:col-span-5',
   },
 ]
 
 export function QuickLinksSection() {
   return (
     <section
-      id="quick-links"
-      className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 px-6 py-16 sm:grid-cols-3"
+      id="missions"
+      className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-5 px-6 py-16 lg:grid-cols-12 lg:auto-rows-[minmax(13rem,auto)]"
     >
       {QUICK_LINKS.map((link) => (
-        <Link key={link.href} href={link.href} className="group">
+        <Link
+          key={link.href}
+          href={link.href}
+          className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+        >
           <Card
-            className="h-full border-none text-white shadow-lg transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-xl"
-            style={{
-              background: `linear-gradient(135deg, ${link.gradientFrom}, ${link.gradientTo})`,
-            }}
+            className={cn(
+              'h-full min-h-56 border border-grid-line bg-surface text-foreground shadow-panel transition-[transform,border-color,box-shadow] duration-300 ease-out group-hover:-translate-y-1 group-hover:border-signal group-hover:shadow-[0_0_0_1px_var(--glow),var(--panel-shadow)] group-focus-visible:-translate-y-1 group-focus-visible:border-signal group-focus-visible:shadow-[0_0_0_1px_var(--glow),var(--panel-shadow)] motion-reduce:transform-none motion-reduce:transition-none lg:min-h-0',
+              link.className,
+            )}
           >
-            <CardHeader>
-              <CardTitle className="font-heading text-2xl">
-                {link.title}
-              </CardTitle>
-              <CardDescription className="text-white/85">
-                {link.description}
-              </CardDescription>
+            <CardHeader className="h-full content-between gap-8">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex size-12 items-center justify-center rounded-lg bg-surface-strong text-signal">
+                  <link.icon aria-hidden="true" className="size-6" />
+                </div>
+                <ArrowUpRight
+                  aria-hidden="true"
+                  className="size-5 text-signal-secondary transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <CardTitle className="text-2xl">{link.title}</CardTitle>
+                <CardDescription>{link.description}</CardDescription>
+              </div>
             </CardHeader>
           </Card>
         </Link>
