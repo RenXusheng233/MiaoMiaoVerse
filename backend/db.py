@@ -56,7 +56,7 @@ def _load_legacy_ai_scores() -> dict[str, dict]:
 
 
 def _seed_if_empty() -> None:
-    """Import the 12 seed breeds (manual scores + legacy AI scores) when the table is empty."""
+    """Import the 20 seed breeds (manual scores + legacy AI scores) when the table is empty."""
     from data.cats import CAT_BREEDS
 
     with Session(engine) as session:

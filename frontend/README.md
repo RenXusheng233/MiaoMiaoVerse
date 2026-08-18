@@ -45,17 +45,18 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 | 路由           | 内容                                                      | 状态                       |
 | -------------- | --------------------------------------------------------- | -------------------------- |
 | `/`            | 首页：视差 Hero + 快捷直达 + 猫咪百科画廊 + 今日明星猫    | ✅                          |
+| `/cat-gallery` | 完整猫咪百科：全品种画廊 + 中英文即时模糊搜索             | ✅                          |
 | `/cats/[id]`   | 猫咪详情：大图/语录/网梗标签/基本信息/适养人群徽章/雷达图 | ✅                          |
 | `/copywriting` | 文案生成：表单 + 三版并行 SSE 流式渲染 + 重生成 + 复制    | ✅                          |
 | `/chat`        | 疗愈问答：聊天式问答 + 流式渲染 + 医疗免责声明            | ✅                          |
 | `/meme-studio` | 表情包工作室：三栏画布编辑器（组件/画布/属性面板）+ PNG 导出 | ✅                          |
 | `/meme`        | 表情包生成(多模态自动生成)                                 | 待开发(后端已就绪)         |
-| `/cats`        | 品种列表页(带筛选)                                        | 规划中(当前首页画廊已覆盖) |
 
 ## 常用命令
 
 ```bash
 bun dev             # 开发服务器
+bun test            # 运行 Bun 单元测试
 bun run build       # 生产构建(next build)
 bun run start       # 生产模式运行
 bun lint            # ESLint
@@ -72,6 +73,7 @@ frontend/
 │   ├── error.tsx             # 全局错误边界(unstable_retry 重试)
 │   ├── loading.tsx           # 首页骨架屏
 │   ├── layout.tsx            # 根布局(Geist + ZCOOL KuaiLe 字体)
+│   ├── cat-gallery/           # 完整猫咪百科 + 搜索 + 骨架屏
 │   ├── cats/[id]/            # 猫咪详情页 + not-found
 │   ├── copywriting/          # 文案生成页 + loading
 │   ├── chat/                 # 疗愈问答页 + loading
