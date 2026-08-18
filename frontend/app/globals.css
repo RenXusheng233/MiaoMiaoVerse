@@ -7,6 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-overlay-foreground: var(--overlay-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-space-grotesk), var(--font-geist-sans), "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -61,6 +62,7 @@
   color-scheme: light;
   --background: oklch(0.975 0.018 86);
   --foreground: oklch(0.27 0.03 285);
+  --overlay-foreground: oklch(0.99 0 0);
   --card: oklch(0.995 0.006 86);
   --card-foreground: var(--foreground);
   --popover: var(--card);
@@ -106,6 +108,7 @@
   color-scheme: dark;
   --background: oklch(0.16 0.035 275);
   --foreground: oklch(0.94 0.015 86);
+  --overlay-foreground: oklch(0.99 0 0);
   --card: oklch(0.21 0.04 275);
   --card-foreground: var(--foreground);
   --popover: var(--card);
