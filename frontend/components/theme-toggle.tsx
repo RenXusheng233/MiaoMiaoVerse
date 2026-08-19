@@ -64,7 +64,7 @@ export function ThemeToggle() {
   return (
     <Button
       aria-label="切换亮暗主题"
-      className="fixed top-4 right-4 z-50 rounded-full shadow-md"
+      className="theme-star fixed top-4 right-4 z-50 rounded-full shadow-md"
       onClick={toggleTheme}
       size="icon-lg"
       type="button"

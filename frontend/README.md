@@ -56,10 +56,10 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 
 ```bash
 bun dev             # 开发服务器
-bun test            # 运行 Bun 单元测试
 bun run build       # 生产构建(next build)
 bun run start       # 生产模式运行
 bun lint            # ESLint
+bun lint:fix        # 自动修复 ESLint 问题
 bunx tsc --noEmit   # 类型检查
 bunx shadcn add <component>   # 添加 shadcn 组件
 ```

@@ -76,9 +76,10 @@ export function DailyCatWidget({ initialData }: DailyCatWidgetProps) {
     >
       <div className="mb-6 flex items-center gap-3 font-mono text-[0.68rem] font-medium tracking-[0.2em] text-signal-secondary uppercase">
         <Sparkles aria-hidden="true" className="size-4" />
-        Daily transmission / 03
+        <span className="sr-only">Daily transmission / 03</span>
+        <span aria-hidden="true">Deep space transmission / 03</span>
       </div>
-      <div className="overflow-hidden rounded-2xl border border-grid-line bg-surface shadow-panel">
+      <div className="deep-space-dossier overflow-hidden rounded-2xl border border-grid-line bg-surface shadow-panel">
         {shouldReduceMotion ? (
           panelContent
         ) : (
@@ -114,7 +115,7 @@ function DailyCatPanelContent({
       <div className="relative aspect-[4/3] min-h-72 overflow-hidden border-b border-grid-line lg:aspect-auto lg:min-h-112 lg:border-r lg:border-b-0">
         <Link
           href={`/cats/${data.breed.id}`}
-          className="group relative block h-full w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-signal"
+          className="daily-image group relative block h-full w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-plasma"
         >
           <Image
             src={data.breed.image_url}
@@ -122,7 +123,7 @@ function DailyCatPanelContent({
             fill
             sizes="(max-width: 1024px) 100vw, 45vw"
             loading="lazy"
-            className="object-cover transition-transform duration-300 motion-safe:group-hover:scale-[1.03] motion-safe:group-focus-visible:scale-[1.03] motion-reduce:transition-none"
+            className="object-cover transition-[transform,filter] duration-500 motion-safe:group-hover:scale-[1.03] motion-safe:group-focus-visible:scale-[1.03] motion-reduce:transition-none"
           />
           <span className="absolute inset-x-5 top-5 flex items-center justify-between font-mono text-[0.65rem] tracking-[0.16em] text-overlay-foreground/80 uppercase drop-shadow-sm">
             <span>MMV / 03</span>
@@ -160,7 +161,7 @@ function DailyCatPanelContent({
             disabled={isLoading}
             aria-busy={isLoading}
             size="lg"
-            className="min-h-11"
+            className="daily-reroll min-h-11"
           >
             <RefreshCw
               aria-hidden="true"

@@ -8,7 +8,7 @@ export default async function Home() {
   const [dailyCat, cats] = await Promise.all([getDailyCat(), getCats()])
 
   return (
-    <main className="flex flex-1 flex-col">
+    <main className="home-shell flex flex-1 flex-col">
       <HeroSection cat={dailyCat.breed} />
       <QuickLinksSection />
       <CatGallery cats={cats} />

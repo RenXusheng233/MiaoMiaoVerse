@@ -14,7 +14,7 @@ export function CatGallery({ cats }: CatGalleryProps) {
   const homeCats = selectHomeCats(cats)
 
   return (
-    <section className="mx-auto w-full max-w-5xl px-6 py-16">
+    <section className="archive-section mx-auto w-full max-w-5xl px-6 py-16">
       <div className="mb-8 flex items-end justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
