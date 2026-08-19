@@ -4,6 +4,8 @@ import Link from 'next/link'
 import type { CatBreed } from '@/lib/types/cat'
 import { cn } from '@/lib/utils'
 
+import styles from './home.module.css'
+
 interface HomeCatCardProps {
   cat: CatBreed
   className?: string
@@ -15,7 +17,8 @@ export function HomeCatCard({ cat, className }: HomeCatCardProps) {
       href={`/cats/${cat.id}`}
       data-archive-coordinate={`MMV-${cat.id}`}
       className={cn(
-        'archive-card group block overflow-hidden rounded-xl border border-grid-line bg-surface shadow-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-plasma focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        styles['archive-card'],
+        'group block overflow-hidden rounded-xl border border-grid-line bg-surface shadow-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-plasma focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         className,
       )}
     >
@@ -27,8 +30,8 @@ export function HomeCatCard({ cat, className }: HomeCatCardProps) {
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="object-cover transition-transform duration-200 motion-safe:group-hover:scale-105 motion-safe:group-focus-visible:scale-105 motion-reduce:transition-none"
         />
-        <span aria-hidden="true" className="archive-card__vignette" />
-        <span className="archive-card__coordinate" aria-hidden="true">
+        <span aria-hidden="true" className={styles['archive-card__vignette']} />
+        <span className={styles['archive-card__coordinate']} aria-hidden="true">
           MMV / {cat.id.slice(0, 6).toUpperCase()}
         </span>
         <div
@@ -39,7 +42,12 @@ export function HomeCatCard({ cat, className }: HomeCatCardProps) {
             <span className="absolute inset-x-0 top-0 h-px bg-signal" />
           </span>
         </div>
-        <div className="archive-card__caption absolute inset-x-0 bottom-0 bg-surface/95 px-3 py-3">
+        <div
+          className={cn(
+            styles['archive-card__caption'],
+            'absolute inset-x-0 bottom-0 bg-surface/95 px-3 py-3',
+          )}
+        >
           <p className="font-heading text-base font-semibold text-foreground">
             {cat.name_zh}
           </p>

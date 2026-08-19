@@ -5,6 +5,8 @@ import { Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { ChatMessage as ChatMessageData } from '@/lib/api'
 
+import styles from './chat.module.css'
+
 interface ChatMessageProps {
   message: ChatMessageData
   isStreaming: boolean
@@ -15,11 +17,13 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        'chat-message',
-        isUser ? 'chat-message--user' : 'chat-message--assistant',
+        styles['chat-message'],
+        isUser
+          ? styles['chat-message--user']
+          : styles['chat-message--assistant'],
       )}
     >
-      <div className="chat-message__meta">
+      <div className={styles['chat-message__meta']}>
         {isUser ? (
           'YOU / PILOT'
         ) : (
@@ -29,15 +33,20 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
           </>
         )}
       </div>
-      <div className="chat-message__bubble">
+      <div className={styles['chat-message__bubble']}>
         <p className="whitespace-pre-wrap">
           {message.content}
           {isStreaming ? (
-            <span aria-hidden="true" className="chat-message__cursor" />
+            <span
+              aria-hidden="true"
+              className={styles['chat-message__cursor']}
+            />
           ) : null}
         </p>
         {message.disclaimer ? (
-          <p className="chat-message__disclaimer">⚠️ {message.disclaimer}</p>
+          <p className={styles['chat-message__disclaimer']}>
+            ⚠️ {message.disclaimer}
+          </p>
         ) : null}
       </div>
     </div>

@@ -12,6 +12,9 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+
+import styles from './home.module.css'
 
 interface QuickLink {
   href: string
@@ -51,16 +54,32 @@ export function QuickLinksSection() {
         <Link
           key={link.href}
           href={link.href}
-          className="mission-card group block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-plasma focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+          className={cn(
+            styles['mission-card'],
+            'group block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-plasma focus-visible:ring-offset-4 focus-visible:ring-offset-background',
+          )}
         >
-          <Card className="mission-card__surface h-full border border-grid-line bg-surface text-foreground shadow-panel transition-[transform,border-color,box-shadow] duration-200 ease-out group-hover:-translate-y-1 group-hover:border-rift group-focus-visible:-translate-y-1 group-focus-visible:border-rift motion-reduce:transform-none motion-reduce:transition-none">
-            <span aria-hidden="true" className="mission-card__starchart" />
+          <Card
+            className={cn(
+              styles['mission-card__surface'],
+              'h-full border border-grid-line bg-surface text-foreground shadow-panel transition-[transform,border-color,box-shadow] duration-200 ease-out group-hover:-translate-y-1 group-hover:border-rift group-focus-visible:-translate-y-1 group-focus-visible:border-rift motion-reduce:transform-none motion-reduce:transition-none',
+            )}
+          >
+            <span
+              aria-hidden="true"
+              className={styles['mission-card__starchart']}
+            />
             <CardHeader className="relative z-2 h-full content-center gap-3">
               <p className="font-mono text-[0.58rem] tracking-[0.2em] text-rift-secondary uppercase">
                 Mission node / 0{index + 1}
               </p>
               <div className="flex items-start justify-between gap-4">
-                <div className="mission-card__icon flex size-10 items-center justify-center rounded-lg bg-surface-strong text-plasma">
+                <div
+                  className={cn(
+                    styles['mission-card__icon'],
+                    'flex size-10 items-center justify-center rounded-lg bg-surface-strong text-plasma',
+                  )}
+                >
                   <link.icon aria-hidden="true" className="size-5" />
                 </div>
                 <ArrowUpRight

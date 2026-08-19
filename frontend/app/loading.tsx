@@ -1,10 +1,14 @@
 import { cn } from '@/lib/utils'
 
+import styles from '@/components/home/home.module.css'
+
 export default function Loading() {
   return (
-    <div className="home-shell flex flex-1 flex-col bg-background">
-      <section className="home-hero" aria-hidden="true">
-        <div className="home-hero__layout">
+    <div
+      className={cn(styles['home-shell'], 'flex flex-1 flex-col bg-background')}
+    >
+      <section className={styles['home-hero']} aria-hidden="true">
+        <div className={styles['home-hero__layout']}>
           <div className="space-y-6">
             <div className="h-8 w-64 animate-pulse rounded-full bg-muted motion-reduce:animate-none" />
             <div className="space-y-3">

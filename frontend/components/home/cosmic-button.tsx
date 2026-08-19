@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
+import styles from './home.module.css'
+
 interface CosmicButtonProps {
   variant: 'primary' | 'secondary'
   href: string
@@ -20,14 +22,14 @@ export function CosmicButton({
     <Link
       href={href}
       className={cn(
-        'cosmic-button',
+        styles['cosmic-button'],
         variant === 'primary'
-          ? 'cosmic-button--primary'
-          : 'cosmic-button--secondary',
+          ? styles['cosmic-button--primary']
+          : styles['cosmic-button--secondary'],
         className,
       )}
     >
-      <span className="cosmic-button__content">{children}</span>
+      <span className={styles['cosmic-button__content']}>{children}</span>
     </Link>
   )
 }

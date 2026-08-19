@@ -6,9 +6,11 @@ import { ArrowLeft, ArrowUpRight, Sparkles } from 'lucide-react'
 
 import { ChatInput } from '@/components/chat/chat-input'
 import { ChatMessage } from '@/components/chat/chat-message'
-import { CosmicBackground } from '@/components/home/cosmic-background'
+import { CosmicBackground } from '@/components/shared/cosmic-background'
 import { sendChatMessage, type ChatMessage as ChatMessageData } from '@/lib/api'
 import type { SSEEvent } from '@/lib/sse'
+
+import styles from './chat.module.css'
 
 const SAMPLE_QUESTIONS = [
   { label: '护理', text: '猫砂盆多久清理一次？' },
@@ -102,30 +104,33 @@ export function ChatWorkspace() {
   }
 
   return (
-    <main className="chat-shell">
+    <main className={styles['chat-shell']}>
       <CosmicBackground />
 
-      <div className="chat-console">
-        <Link href="/" className="chat-console__back">
+      <div className={styles['chat-console']}>
+        <Link href="/" className={styles['chat-console__back']}>
           <ArrowLeft aria-hidden="true" />
           返回首页
         </Link>
 
-        <header className="chat-console__header">
-          <p className="chat-console__eyebrow">
+        <header className={styles['chat-console__header']}>
+          <p className={styles['chat-console__eyebrow']}>
             <span aria-hidden="true" />
             喵喵宇宙 · CARE SIGNAL
           </p>
-          <h1 className="chat-console__title">
+          <h1 className={styles['chat-console__title']}>
             疗愈问答<span>助手</span>
           </h1>
-          <p className="chat-console__description">
+          <p className={styles['chat-console__description']}>
             猫咪护理、营养与健康问题，接入喵喵宇宙的疗愈频道
           </p>
         </header>
 
-        <section aria-label="疗愈问答对话区" className="chat-console__surface">
-          <div className="chat-console__surface-head">
+        <section
+          aria-label="疗愈问答对话区"
+          className={styles['chat-console__surface']}
+        >
+          <div className={styles['chat-console__surface-head']}>
             <span>
               <Sparkles aria-hidden="true" />
               MIAO SIGNAL
@@ -133,28 +138,36 @@ export function ChatWorkspace() {
             <span>REALTIME RESPONSE</span>
           </div>
 
-          <div ref={listRef} className="chat-console__stream">
+          <div ref={listRef} className={styles['chat-console__stream']}>
             {messages.length === 0 ? (
-              <div className="chat-empty">
-                <div className="chat-empty__beacon">
+              <div className={styles['chat-empty']}>
+                <div className={styles['chat-empty__beacon']}>
                   <Sparkles aria-hidden="true" />
                 </div>
-                <p className="chat-empty__eyebrow">CATS / WELLNESS / SIGNAL</p>
-                <h2>把猫咪的烦恼，交给喵喵宇宙。</h2>
-                <p className="chat-empty__description">
+                <p className={styles['chat-empty__eyebrow']}>
+                  CATS / WELLNESS / SIGNAL
+                </p>
+                <h2 className={styles['chat-empty__title']}>
+                  把猫咪的烦恼，交给喵喵宇宙。
+                </h2>
+                <p className={styles['chat-empty__description']}>
                   选择一个频道开始连接，也可以直接输入你想问的事。
                 </p>
-                <div className="chat-empty__prompts">
+                <div className={styles['chat-empty__prompts']}>
                   {SAMPLE_QUESTIONS.map((q) => (
                     <button
                       key={q.text}
                       type="button"
                       onClick={() => handleSend(q.text)}
                       disabled={isStreaming}
-                      className="chat-prompt"
+                      className={styles['chat-prompt']}
                     >
-                      <span className="chat-prompt__label">{q.label}</span>
-                      <span className="chat-prompt__text">{q.text}</span>
+                      <span className={styles['chat-prompt__label']}>
+                        {q.label}
+                      </span>
+                      <span className={styles['chat-prompt__text']}>
+                        {q.text}
+                      </span>
                       <ArrowUpRight aria-hidden="true" />
                     </button>
                   ))}
@@ -175,7 +188,9 @@ export function ChatWorkspace() {
             )}
           </div>
 
-          {error ? <p className="chat-console__error">{error}</p> : null}
+          {error ? (
+            <p className={styles['chat-console__error']}>{error}</p>
+          ) : null}
 
           <ChatInput disabled={isStreaming} onSend={handleSend} />
         </section>

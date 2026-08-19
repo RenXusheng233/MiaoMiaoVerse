@@ -6,6 +6,8 @@ import { selectHomeCats } from '@/lib/cat-gallery'
 import type { CatBreed } from '@/lib/types/cat'
 import { cn } from '@/lib/utils'
 
+import styles from './home.module.css'
+
 interface CatGalleryProps {
   cats: CatBreed[]
 }
@@ -14,7 +16,12 @@ export function CatGallery({ cats }: CatGalleryProps) {
   const homeCats = selectHomeCats(cats)
 
   return (
-    <section className="archive-section mx-auto w-full max-w-5xl px-6 py-16">
+    <section
+      className={cn(
+        styles['archive-section'],
+        'mx-auto w-full max-w-5xl px-6 py-16',
+      )}
+    >
       <div className="mb-8 flex items-end justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">

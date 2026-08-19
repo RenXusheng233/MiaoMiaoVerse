@@ -11,6 +11,8 @@ import { cn } from '@/lib/utils'
 import { getRandomCat } from '@/lib/api'
 import type { DailyCatResponse } from '@/lib/types/cat'
 
+import styles from './home.module.css'
+
 const IMAGE_PRELOAD_TIMEOUT_MS = 8000
 
 interface DailyCatWidgetProps {
@@ -79,7 +81,12 @@ export function DailyCatWidget({ initialData }: DailyCatWidgetProps) {
         <span className="sr-only">Daily transmission / 03</span>
         <span aria-hidden="true">Deep space transmission / 03</span>
       </div>
-      <div className="deep-space-dossier overflow-hidden rounded-2xl border border-grid-line bg-surface shadow-panel">
+      <div
+        className={cn(
+          styles['deep-space-dossier'],
+          'overflow-hidden rounded-2xl border border-grid-line bg-surface shadow-panel',
+        )}
+      >
         {shouldReduceMotion ? (
           panelContent
         ) : (
@@ -115,7 +122,10 @@ function DailyCatPanelContent({
       <div className="relative aspect-[4/3] min-h-72 overflow-hidden border-b border-grid-line lg:aspect-auto lg:min-h-112 lg:border-r lg:border-b-0">
         <Link
           href={`/cats/${data.breed.id}`}
-          className="daily-image group relative block h-full w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-plasma"
+          className={cn(
+            styles['daily-image'],
+            'group relative block h-full w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-plasma',
+          )}
         >
           <Image
             src={data.breed.image_url}
@@ -161,7 +171,7 @@ function DailyCatPanelContent({
             disabled={isLoading}
             aria-busy={isLoading}
             size="lg"
-            className="daily-reroll min-h-11"
+            className={cn(styles['daily-reroll'], 'min-h-11')}
           >
             <RefreshCw
               aria-hidden="true"

@@ -3,6 +3,8 @@
 import { useEffect, useRef } from 'react'
 import { Mesh, Program, Renderer, Triangle } from 'ogl'
 
+import styles from './home.module.css'
+
 interface RiftSceneProps {
   isPaused: boolean
   onReady: () => void
@@ -249,8 +251,8 @@ export function RiftScene({
   }, [])
 
   return (
-    <div ref={containerRef} aria-hidden="true" className="rift-scene">
-      <canvas ref={canvasRef} className="rift-scene__canvas" />
+    <div ref={containerRef} aria-hidden="true" className={styles['rift-scene']}>
+      <canvas ref={canvasRef} className={styles['rift-scene__canvas']} />
     </div>
   )
 }

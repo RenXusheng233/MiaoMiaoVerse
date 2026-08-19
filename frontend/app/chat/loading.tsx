@@ -1,22 +1,42 @@
-import { CosmicBackground } from '@/components/home/cosmic-background'
+import { CosmicBackground } from '@/components/shared/cosmic-background'
+import { cn } from '@/lib/utils'
+
+import styles from '@/components/chat/chat.module.css'
 
 export default function Loading() {
   return (
-    <main className="chat-shell">
+    <main className={styles['chat-shell']}>
       <CosmicBackground />
-      <div className="chat-console chat-console--loading">
-        <div className="chat-loading__header">
-          <div className="chat-loading__back" />
-          <div className="chat-loading__eyebrow" />
-          <div className="chat-loading__title" />
-          <div className="chat-loading__description" />
+      <div
+        className={cn(styles['chat-console'], styles['chat-console--loading'])}
+      >
+        <div className={styles['chat-loading__header']}>
+          <div className={styles['chat-loading__back']} />
+          <div className={styles['chat-loading__eyebrow']} />
+          <div className={styles['chat-loading__title']} />
+          <div className={styles['chat-loading__description']} />
         </div>
-        <div className="chat-console__surface chat-loading__surface">
-          <div className="chat-loading__stream">
-            <div className="chat-loading__line chat-loading__line--short" />
-            <div className="chat-loading__line chat-loading__line--long" />
+        <div
+          className={cn(
+            styles['chat-console__surface'],
+            styles['chat-loading__surface'],
+          )}
+        >
+          <div className={styles['chat-loading__stream']}>
+            <div
+              className={cn(
+                styles['chat-loading__line'],
+                styles['chat-loading__line--short'],
+              )}
+            />
+            <div
+              className={cn(
+                styles['chat-loading__line'],
+                styles['chat-loading__line--long'],
+              )}
+            />
           </div>
-          <div className="chat-loading__composer" />
+          <div className={styles['chat-loading__composer']} />
         </div>
       </div>
     </main>

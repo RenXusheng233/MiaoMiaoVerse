@@ -9,6 +9,8 @@ import { motion, useReducedMotion } from 'motion/react'
 import type { CatBreed } from '@/lib/types/cat'
 import { cn } from '@/lib/utils'
 
+import styles from './home.module.css'
+
 const RiftScene = dynamic(
   () => import('./rift-scene').then((module) => module.RiftScene),
   { ssr: false },
@@ -87,14 +89,14 @@ export function VersePortal({ cat, className }: VersePortalProps) {
   return (
     <article
       aria-label={`${cat.name_zh}全息星门`}
-      className={cn('verse-portal', className)}
+      className={cn(styles['verse-portal'], className)}
       onPointerDown={() => {
         if (allowPortalInteraction) setPulse((value) => value + 1)
       }}
     >
       <div
         ref={stageRef}
-        className="verse-portal__stage"
+        className={styles['verse-portal__stage']}
         onPointerMove={handlePointerMove}
         onPointerLeave={resetPointerTilt}
       >
@@ -102,21 +104,27 @@ export function VersePortal({ cat, className }: VersePortalProps) {
           data-rift-fallback="true"
           aria-hidden="true"
           className={cn(
-            'verse-portal__fallback',
+            styles['verse-portal__fallback'],
             isSceneReady &&
               !useStaticScene &&
-              'verse-portal__fallback--enhanced',
+              styles['verse-portal__fallback--enhanced'],
           )}
         >
           <div
-            className="verse-portal__ring verse-portal__ring--outer"
+            className={cn(
+              styles['verse-portal__ring'],
+              styles['verse-portal__ring--outer'],
+            )}
             style={{ animationPlayState: animationState }}
           />
           <div
-            className="verse-portal__ring verse-portal__ring--inner"
+            className={cn(
+              styles['verse-portal__ring'],
+              styles['verse-portal__ring--inner'],
+            )}
             style={{ animationPlayState: animationState }}
           />
-          <div className="verse-portal__halo" />
+          <div className={styles['verse-portal__halo']} />
         </div>
 
         {!useStaticScene ? (
@@ -134,12 +142,12 @@ export function VersePortal({ cat, className }: VersePortalProps) {
           initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.82 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.72, duration: 0.52, ease: 'easeOut' }}
-          className="cat-orb"
+          className={styles['cat-orb']}
           style={{ animationPlayState: animationState }}
         >
           {imageFailed ? (
             <div
-              className="cat-orb__fallback"
+              className={styles['cat-orb__fallback']}
               role="img"
               aria-label={cat.name_zh}
             >
@@ -152,20 +160,20 @@ export function VersePortal({ cat, className }: VersePortalProps) {
               alt={`${cat.name_zh}（${cat.name_en}）`}
               fill
               sizes="(max-width: 767px) 58vw, (max-width: 1279px) 38vw, 28vw"
-              className="cat-orb__image"
+              className={styles['cat-orb__image']}
               onError={() => setImageFailed(true)}
               preload
             />
           )}
-          <div aria-hidden="true" className="cat-orb__shade" />
+          <div aria-hidden="true" className={styles['cat-orb__shade']} />
           <div
             aria-hidden="true"
-            className="cat-orb__scan"
+            className={styles['cat-orb__scan']}
             style={{ animationPlayState: animationState }}
           />
           <div
             aria-hidden="true"
-            className="cat-orb__latitude"
+            className={styles['cat-orb__latitude']}
             style={{ animationPlayState: animationState }}
           />
         </motion.div>
@@ -174,16 +182,22 @@ export function VersePortal({ cat, className }: VersePortalProps) {
           <span
             key={pulse}
             aria-hidden="true"
-            className="verse-portal__pulse"
+            className={styles['verse-portal__pulse']}
           />
         ) : null}
         <div
           aria-hidden="true"
-          className="verse-portal__satellite verse-portal__satellite--one"
+          className={cn(
+            styles['verse-portal__satellite'],
+            styles['verse-portal__satellite--one'],
+          )}
         />
         <div
           aria-hidden="true"
-          className="verse-portal__satellite verse-portal__satellite--two"
+          className={cn(
+            styles['verse-portal__satellite'],
+            styles['verse-portal__satellite--two'],
+          )}
         />
 
         <button
@@ -194,7 +208,7 @@ export function VersePortal({ cat, className }: VersePortalProps) {
             event.stopPropagation()
             setIsPaused((paused) => !paused)
           }}
-          className="verse-portal__control"
+          className={styles['verse-portal__control']}
         >
           {isPaused ? (
             <Play aria-hidden="true" className="size-3.5" />
@@ -204,8 +218,8 @@ export function VersePortal({ cat, className }: VersePortalProps) {
         </button>
       </div>
 
-      <div className="hologram-dossier">
-        <div className="hologram-dossier__identity">
+      <div className={styles['hologram-dossier']}>
+        <div className={styles['hologram-dossier__identity']}>
           <p>{cat.name_zh}</p>
           <span>{cat.name_en}</span>
         </div>

@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
+
+import styles from './chat.module.css'
 
 interface ChatInputProps {
   disabled: boolean
@@ -23,15 +26,15 @@ export function ChatInput({ disabled, onSend }: ChatInputProps) {
   }
 
   return (
-    <div className="chat-composer">
-      <div className="chat-composer__head">
+    <div className={styles['chat-composer']}>
+      <div className={styles['chat-composer__head']}>
         <span>
           <span aria-hidden="true" />
           SIGNAL INPUT
         </span>
         <span>ENTER 发送 · SHIFT+ENTER 换行</span>
       </div>
-      <div className="chat-composer__row">
+      <div className={styles['chat-composer__row']}>
         <Textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -49,14 +52,17 @@ export function ChatInput({ disabled, onSend }: ChatInputProps) {
           placeholder="输入猫咪的烦恼，开启疗愈连接…"
           // py-2.5 keeps the single-line placeholder vertically centered
           // (44px height = 10px + 24px line + 10px)
-          className="chat-composer__textarea min-h-11 max-h-32 resize-none py-2.5"
+          className={cn(
+            styles['chat-composer__textarea'],
+            'min-h-11 max-h-32 resize-none py-2.5',
+          )}
           disabled={disabled}
         />
         <Button
           onClick={handleSend}
           disabled={disabled || !value.trim()}
           size="icon"
-          className="chat-composer__send h-11 w-11 shrink-0"
+          className={cn(styles['chat-composer__send'], 'h-11 w-11 shrink-0')}
           aria-label="发送"
         >
           <Send aria-hidden="true" />
