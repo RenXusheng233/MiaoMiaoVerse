@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { ArrowLeft, ArrowUpRight, Sparkles } from 'lucide-react'
+
 import { ChatInput } from '@/components/chat/chat-input'
 import { ChatMessage } from '@/components/chat/chat-message'
+import { CosmicBackground } from '@/components/home/cosmic-background'
 import { sendChatMessage, type ChatMessage as ChatMessageData } from '@/lib/api'
 import type { SSEEvent } from '@/lib/sse'
 
@@ -99,64 +102,84 @@ export function ChatWorkspace() {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100dvh-4rem)] w-full max-w-3xl flex-col px-6 py-6">
-      <Link
-        href="/"
-        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        ← 返回首页
-      </Link>
-      <div className="mt-2 text-center">
-        <h1 className="font-heading text-3xl text-foreground">
-          🐱 疗愈问答助手
-        </h1>
-        <p className="mt-1 text-muted-foreground">
-          猫咪护理、营养、健康问题，随时来问
-        </p>
-      </div>
+    <main className="chat-shell">
+      <CosmicBackground />
 
-      <div ref={listRef} className="mt-6 flex-1 space-y-4 overflow-y-auto pb-4">
-        {messages.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-4">
-            <p className="text-muted-foreground">
-              有什么想知道的？试试这些问题：
-            </p>
-            <div className="flex flex-col gap-2">
-              {SAMPLE_QUESTIONS.map((q) => (
-                <button
-                  key={q.text}
-                  type="button"
-                  onClick={() => handleSend(q.text)}
-                  disabled={isStreaming}
-                  className="rounded-full border border-border px-4 py-2 text-sm text-foreground transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
-                >
-                  {q.label} · {q.text}
-                </button>
-              ))}
-            </div>
+      <div className="chat-console">
+        <Link href="/" className="chat-console__back">
+          <ArrowLeft aria-hidden="true" />
+          返回首页
+        </Link>
+
+        <header className="chat-console__header">
+          <p className="chat-console__eyebrow">
+            <span aria-hidden="true" />
+            喵喵宇宙 · CARE SIGNAL
+          </p>
+          <h1 className="chat-console__title">
+            疗愈问答<span>助手</span>
+          </h1>
+          <p className="chat-console__description">
+            猫咪护理、营养与健康问题，接入喵喵宇宙的疗愈频道
+          </p>
+        </header>
+
+        <section aria-label="疗愈问答对话区" className="chat-console__surface">
+          <div className="chat-console__surface-head">
+            <span>
+              <Sparkles aria-hidden="true" />
+              MIAO SIGNAL
+            </span>
+            <span>REALTIME RESPONSE</span>
           </div>
-        ) : (
-          messages.map((m, i) => (
-            <ChatMessage
-              key={i}
-              message={m}
-              isStreaming={
-                isStreaming &&
-                i === messages.length - 1 &&
-                m.role === 'assistant'
-              }
-            />
-          ))
-        )}
+
+          <div ref={listRef} className="chat-console__stream">
+            {messages.length === 0 ? (
+              <div className="chat-empty">
+                <div className="chat-empty__beacon">
+                  <Sparkles aria-hidden="true" />
+                </div>
+                <p className="chat-empty__eyebrow">CATS / WELLNESS / SIGNAL</p>
+                <h2>把猫咪的烦恼，交给喵喵宇宙。</h2>
+                <p className="chat-empty__description">
+                  选择一个频道开始连接，也可以直接输入你想问的事。
+                </p>
+                <div className="chat-empty__prompts">
+                  {SAMPLE_QUESTIONS.map((q) => (
+                    <button
+                      key={q.text}
+                      type="button"
+                      onClick={() => handleSend(q.text)}
+                      disabled={isStreaming}
+                      className="chat-prompt"
+                    >
+                      <span className="chat-prompt__label">{q.label}</span>
+                      <span className="chat-prompt__text">{q.text}</span>
+                      <ArrowUpRight aria-hidden="true" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              messages.map((m, i) => (
+                <ChatMessage
+                  key={i}
+                  message={m}
+                  isStreaming={
+                    isStreaming &&
+                    i === messages.length - 1 &&
+                    m.role === 'assistant'
+                  }
+                />
+              ))
+            )}
+          </div>
+
+          {error ? <p className="chat-console__error">{error}</p> : null}
+
+          <ChatInput disabled={isStreaming} onSend={handleSend} />
+        </section>
       </div>
-
-      {error ? (
-        <p className="mb-2 rounded-lg bg-destructive/10 px-4 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      ) : null}
-
-      <ChatInput disabled={isStreaming} onSend={handleSend} />
-    </div>
+    </main>
   )
 }

@@ -52,19 +52,11 @@ const fragment = /* glsl */ `
     float angle = atan(p.y, p.x);
     float radius = length(p);
     float drift = noise(vec2(angle * 2.4 + uTime * 0.08, radius * 8.0));
-    float warp = sin(angle * 5.0 - uTime * 0.45) * 0.008 + (drift - 0.5) * 0.018;
-    float ringA = 1.0 - smoothstep(0.012, 0.038, abs(radius - 0.385 - warp));
-    float ringB = 1.0 - smoothstep(0.008, 0.026, abs(radius - 0.445 + warp * 0.55));
-    float arcA = smoothstep(-0.35, 0.18, sin(angle * 2.0 + uTime * 0.18));
-    float arcB = smoothstep(-0.55, 0.25, cos(angle * 3.0 - uTime * 0.13));
     float halo = (1.0 - smoothstep(0.31, 0.54, radius)) * smoothstep(0.22, 0.34, radius);
     vec3 violet = vec3(0.49, 0.36, 1.0);
-    vec3 cyan = vec3(0.33, 0.9, 1.0);
     vec3 pink = vec3(0.91, 0.42, 1.0);
-    vec3 color = violet * ringA * arcA + cyan * ringB * arcB;
-    color += mix(violet, pink, drift) * halo * 0.28;
-    color += cyan * pow(max(ringA, ringB), 3.0) * 0.8;
-    float alpha = clamp(max(ringA * arcA, ringB * arcB) + halo * 0.36, 0.0, 0.92);
+    vec3 color = mix(violet, pink, drift) * halo * 0.42;
+    float alpha = halo * 0.3;
     gl_FragColor = vec4(color, alpha);
   }
 `
