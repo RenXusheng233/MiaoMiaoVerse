@@ -5,10 +5,12 @@
 }
 
 @keyframes chat-skeleton {
+
   0%,
   100% {
     opacity: 0.45;
   }
+
   50% {
     opacity: 0.9;
   }
@@ -101,8 +103,8 @@
   letter-spacing: 0.18em;
 }
 
-.chat-console__eyebrow > span,
-.chat-composer__head > span:first-child > span {
+.chat-console__eyebrow>span,
+.chat-composer__head>span:first-child>span {
   width: 0.42rem;
   height: 0.42rem;
   flex-shrink: 0;
@@ -124,16 +126,12 @@
 .chat-console__title span {
   display: inline-block;
   margin-left: 0.14em;
-  background: linear-gradient(
-    105deg,
-    var(--plasma),
-    var(--rift-secondary) 56%,
-    var(--rift)
-  );
+  background: linear-gradient(105deg,
+      var(--plasma),
+      var(--rift-secondary) 56%,
+      var(--rift));
   color: transparent;
-  filter: drop-shadow(
-    0 0 18px color-mix(in oklch, var(--rift) 28%, transparent)
-  );
+  filter: drop-shadow(0 0 18px color-mix(in oklch, var(--rift) 28%, transparent));
   -webkit-background-clip: text;
   background-clip: text;
 }
@@ -160,11 +158,9 @@
   overflow: hidden;
   border: 1px solid color-mix(in oklch, var(--rift) 28%, var(--grid-line));
   border-radius: 1.35rem;
-  background: linear-gradient(
-    130deg,
-    color-mix(in oklch, var(--surface) 87%, transparent),
-    color-mix(in oklch, var(--rift) 7%, var(--surface))
-  );
+  background: linear-gradient(130deg,
+      color-mix(in oklch, var(--surface) 87%, transparent),
+      color-mix(in oklch, var(--rift) 7%, var(--surface)));
   box-shadow:
     inset 0 1px 0 var(--glass-highlight),
     0 24px 70px color-mix(in oklch, var(--rift) 15%, transparent);
@@ -238,12 +234,10 @@
   place-items: center;
   border: 1px solid color-mix(in oklch, var(--plasma) 48%, transparent);
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 36% 30%,
-    color-mix(in oklch, var(--star) 44%, transparent),
-    color-mix(in oklch, var(--rift) 18%, var(--surface)) 48%,
-    color-mix(in oklch, var(--void) 70%, transparent)
-  );
+  background: radial-gradient(circle at 36% 30%,
+      color-mix(in oklch, var(--star) 44%, transparent),
+      color-mix(in oklch, var(--rift) 18%, var(--surface)) 48%,
+      color-mix(in oklch, var(--void) 70%, transparent));
   box-shadow:
     inset 0 1px 0 var(--glass-highlight),
     0 0 30px color-mix(in oklch, var(--plasma) 20%, transparent);
@@ -397,11 +391,9 @@
 .chat-message--user .chat-message__bubble {
   border-color: color-mix(in oklch, var(--plasma) 30%, transparent);
   border-bottom-right-radius: 0.25rem;
-  background: linear-gradient(
-    120deg,
-    color-mix(in oklch, var(--rift) 86%, var(--void)),
-    color-mix(in oklch, var(--rift-secondary) 68%, var(--void))
-  );
+  background: linear-gradient(120deg,
+      color-mix(in oklch, var(--rift) 86%, var(--void)),
+      color-mix(in oklch, var(--rift-secondary) 68%, var(--void)));
   box-shadow: 0 12px 30px color-mix(in oklch, var(--rift) 18%, transparent);
   color: var(--overlay-foreground);
 }
@@ -409,11 +401,9 @@
 .chat-message--assistant .chat-message__bubble {
   border-left: 2px solid color-mix(in oklch, var(--plasma) 58%, transparent);
   border-bottom-left-radius: 0.25rem;
-  background: linear-gradient(
-    118deg,
-    color-mix(in oklch, var(--surface) 94%, transparent),
-    color-mix(in oklch, var(--rift) 8%, var(--surface))
-  );
+  background: linear-gradient(118deg,
+      color-mix(in oklch, var(--surface) 94%, transparent),
+      color-mix(in oklch, var(--rift) 8%, var(--surface)));
 }
 
 .chat-message__cursor {
@@ -470,13 +460,13 @@
   letter-spacing: 0.12em;
 }
 
-.chat-composer__head > span {
+.chat-composer__head>span {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
 }
 
-.chat-composer__head > span:first-child {
+.chat-composer__head>span:first-child {
   color: var(--plasma);
 }
 
@@ -501,11 +491,9 @@
 
 .chat-composer__send {
   border-color: color-mix(in oklch, var(--plasma) 42%, transparent);
-  background: linear-gradient(
-    135deg,
-    color-mix(in oklch, var(--rift) 86%, var(--void)),
-    color-mix(in oklch, var(--rift-secondary) 72%, var(--void))
-  );
+  background: linear-gradient(135deg,
+      color-mix(in oklch, var(--rift) 86%, var(--void)),
+      color-mix(in oklch, var(--rift-secondary) 72%, var(--void)));
   box-shadow:
     inset 0 1px 0 color-mix(in oklch, var(--star) 28%, transparent),
     0 0 22px color-mix(in oklch, var(--rift) 24%, transparent);
@@ -672,14 +660,14 @@
     padding-bottom: 0.45rem;
   }
 
-  .chat-composer__head > span:last-child {
+  .chat-composer__head>span:last-child {
     display: none;
   }
 }
 
 @media (min-width: 1024px) {
   .chat-console {
-    max-width: 36rem;
+    max-width: 40rem;
   }
 
   .chat-console__header {

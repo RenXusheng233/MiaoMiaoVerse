@@ -1,6 +1,8 @@
 'use client'
 
 import { useMemo } from 'react'
+import { Sparkles } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import {
   Combobox,
@@ -12,7 +14,6 @@ import {
 } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/utils'
 import {
   Select,
   SelectGroup,
@@ -21,8 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 import type { CopyForm, Platform } from '@/lib/api'
 import type { CatBreed } from '@/lib/types/cat'
+
+import styles from './copywriting.module.css'
 
 const BEHAVIOR_CHIPS = [
   '正在拆沙发',
@@ -61,9 +65,6 @@ interface CopyFormProps {
   onSubmit: () => void
 }
 
-const CHIP_CLASS =
-  'rounded-full border border-border px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-50'
-
 export function CopyForm({
   value,
   onChange,
@@ -94,154 +95,188 @@ export function CopyForm({
     () => breedOptions.find((o) => o.value === value.breed) ?? null,
     [breedOptions, value.breed],
   )
+  const hasCatName = value.cat_name.trim().length > 0
 
   return (
-    <div className="space-y-4">
-      {/* 猫咪名字(必填) */}
-      <div className="grid gap-1.5">
-        <Label htmlFor="cat-name">猫咪名字 *</Label>
-        <Input
-          id="cat-name"
-          value={value.cat_name}
-          onChange={(e) => set('cat_name', e.target.value)}
-          placeholder="例如：布丁"
-          maxLength={50}
-          disabled={disabled}
-        />
-      </div>
+    <div className={styles['copy-form']}>
+      <div className={styles['copy-form__section']}>
+        <p className={styles['copy-form__section-label']}>01 / CAT PROFILE</p>
 
-      {/* 品种(combobox,可搜索,可不选) */}
-      <div className="grid gap-1.5">
-        <Label>品种</Label>
-        <Combobox
-          value={selectedBreed}
-          // The option object is reconstructed on every render, so compare by
-          // `value` instead of the default referential equality.
-          isItemEqualToValue={(a, b) => a.value === b.value}
-          // Base UI only runs its built-in query filter (and only then derives
-          // the `data-empty` state) when the options are supplied through the
-          // `items` prop. Without it, the popup always reports empty while all
-          // items stay rendered, so the search never filters and the empty
-          // message shows unconditionally.
-          items={breedOptions}
-          onValueChange={(opt) =>
-            set('breed', opt && opt.value ? opt.value : undefined)
-          }
-          disabled={disabled}
-        >
-          <ComboboxInput
-            placeholder="搜索品种…"
-            className="w-full"
+        <div className={styles['copy-field']}>
+          <div className={styles['copy-field__label-row']}>
+            <Label className={styles['copy-field__label']} htmlFor="cat-name">
+              猫咪名字
+            </Label>
+            <span className={styles['copy-field__required']}>REQUIRED</span>
+          </div>
+          <Input
+            className={styles['copy-control']}
+            id="cat-name"
+            value={value.cat_name}
+            onChange={(e) => set('cat_name', e.target.value)}
+            placeholder="例如：布丁"
+            maxLength={50}
             disabled={disabled}
           />
-          <ComboboxContent>
-            <ComboboxList>
-              {/* Function children = "closed template" API: renders only the
-                  items that pass the query filter. */}
-              {(opt) => (
-                <ComboboxItem key={opt.value} value={opt}>
-                  {opt.label}
-                </ComboboxItem>
-              )}
-            </ComboboxList>
-            <ComboboxEmpty>没有找到匹配的品种</ComboboxEmpty>
-          </ComboboxContent>
-        </Combobox>
-      </div>
+          <p
+            className={cn(
+              styles['copy-field__microcopy'],
+              !hasCatName && styles['copy-field__microcopy--required'],
+            )}
+          >
+            {hasCatName ? '告诉我它叫什么，文案开始有性格' : '给猫咪起个名字吧'}
+          </p>
+        </div>
 
-      {/* 当前状态/行为 + chips */}
-      <div className="grid gap-1.5">
-        <Label htmlFor="behavior">当前状态/行为</Label>
-        <Input
-          id="behavior"
-          value={value.behavior ?? ''}
-          onChange={(e) => set('behavior', e.target.value || undefined)}
-          maxLength={100}
-          disabled={disabled}
-        />
-        <div className="flex flex-wrap gap-2">
-          {BEHAVIOR_CHIPS.map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              onClick={() => set('behavior', chip)}
-              className={CHIP_CLASS}
+        <div className={styles['copy-field']}>
+          <div className={styles['copy-field__label-row']}>
+            <Label className={styles['copy-field__label']}>品种</Label>
+            <span className={styles['copy-field__optional']}>OPTIONAL</span>
+          </div>
+          <Combobox
+            value={selectedBreed}
+            // The option object is reconstructed on every render, so compare by
+            // `value` instead of the default referential equality.
+            isItemEqualToValue={(a, b) => a.value === b.value}
+            // Base UI only runs its built-in query filter (and only then derives
+            // the `data-empty` state) when the options are supplied through the
+            // `items` prop. Without it, the popup always reports empty while all
+            // items stay rendered, so the search never filters and the empty
+            // message shows unconditionally.
+            items={breedOptions}
+            onValueChange={(opt) =>
+              set('breed', opt && opt.value ? opt.value : undefined)
+            }
+            disabled={disabled}
+          >
+            <ComboboxInput
+              placeholder="搜索品种…"
+              className={cn(styles['copy-control'], 'w-full')}
               disabled={disabled}
-            >
-              {chip}
-            </button>
-          ))}
+            />
+            <ComboboxContent>
+              <ComboboxList>
+                {/* Function children = "closed template" API: renders only the
+                    items that pass the query filter. */}
+                {(opt) => (
+                  <ComboboxItem key={opt.value} value={opt}>
+                    {opt.label}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+              <ComboboxEmpty>没有找到匹配的品种</ComboboxEmpty>
+            </ComboboxContent>
+          </Combobox>
         </div>
       </div>
 
-      {/* 风格偏好 + chips */}
-      <div className="grid gap-1.5">
-        <Label htmlFor="style-pref">风格偏好</Label>
-        <Input
-          id="style-pref"
-          value={value.style_pref ?? ''}
-          onChange={(e) => set('style_pref', e.target.value || undefined)}
-          maxLength={200}
-          disabled={disabled}
-        />
-        <div className="flex flex-wrap gap-2">
-          {STYLE_CHIPS.map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              onClick={() => set('style_pref', chip)}
-              className={CHIP_CLASS}
-              disabled={disabled}
-            >
-              {chip}
-            </button>
-          ))}
+      <div className={styles['copy-form__section']}>
+        <p className={styles['copy-form__section-label']}>02 / DAILY SIGNAL</p>
+
+        <div className={styles['copy-field']}>
+          <div className={styles['copy-field__label-row']}>
+            <Label className={styles['copy-field__label']} htmlFor="behavior">
+              当前状态 / 行为
+            </Label>
+            <span className={styles['copy-field__optional']}>OPTIONAL</span>
+          </div>
+          <Input
+            className={styles['copy-control']}
+            id="behavior"
+            value={value.behavior ?? ''}
+            onChange={(e) => set('behavior', e.target.value || undefined)}
+            placeholder="例如：刚睡醒，正在踩奶"
+            maxLength={100}
+            disabled={disabled}
+          />
+          <div className={styles['copy-chip-list']}>
+            {BEHAVIOR_CHIPS.map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => set('behavior', chip)}
+                className={styles['copy-chip']}
+                disabled={disabled}
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* 平台目标 */}
-      <div className="grid gap-1.5">
-        <Label>平台目标</Label>
-        <Select
-          items={PLATFORMS}
-          value={value.platform}
-          onValueChange={(v) => set('platform', v as Platform)}
-          disabled={disabled}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {PLATFORMS.map((p) => (
-                <SelectItem key={p.value} value={p.value}>
-                  {p.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className={styles['copy-form__section']}>
+        <p className={styles['copy-form__section-label']}>
+          03 / VOICE &amp; CHANNEL
+        </p>
+
+        <div className={styles['copy-field']}>
+          <div className={styles['copy-field__label-row']}>
+            <Label className={styles['copy-field__label']} htmlFor="style-pref">
+              风格偏好
+            </Label>
+            <span className={styles['copy-field__optional']}>OPTIONAL</span>
+          </div>
+          <Input
+            className={styles['copy-control']}
+            id="style-pref"
+            value={value.style_pref ?? ''}
+            onChange={(e) => set('style_pref', e.target.value || undefined)}
+            placeholder="例如：带点反差萌"
+            maxLength={200}
+            disabled={disabled}
+          />
+          <div className={styles['copy-chip-list']}>
+            {STYLE_CHIPS.map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => set('style_pref', chip)}
+                className={styles['copy-chip']}
+                disabled={disabled}
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles['copy-field']}>
+          <div className={styles['copy-field__label-row']}>
+            <Label className={styles['copy-field__label']}>发布平台</Label>
+            <span className={styles['copy-field__optional']}>CHANNEL</span>
+          </div>
+          <Select
+            items={PLATFORMS}
+            value={value.platform}
+            onValueChange={(v) => set('platform', v as Platform)}
+            disabled={disabled}
+          >
+            <SelectTrigger className={cn(styles['copy-control'], 'w-full')}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {PLATFORMS.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Button
         onClick={onSubmit}
-        disabled={disabled || !value.cat_name.trim()}
+        disabled={disabled || !hasCatName}
         size="lg"
-        className="w-full"
+        className={styles['copy-form__submit']}
       >
+        <Sparkles aria-hidden="true" />
         生成文案
       </Button>
-      {/* The hint is always rendered — visibility toggles instead of unmount
-          so the form height (and the right-side card frames that stretch to
-          match it) never jump when a name is typed. */}
-      <p
-        className={cn(
-          'text-sm font-semibold text-destructive',
-          value.cat_name.trim() && 'invisible',
-        )}
-      >
-        给猫咪起个名字吧
-      </p>
     </div>
   )
 }
