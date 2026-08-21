@@ -6,6 +6,7 @@
 
 import { useRef, useState } from 'react'
 import Link from 'next/link'
+import { ArrowLeft, Download, Trash2 } from 'lucide-react'
 import { CanvasStage } from '@/components/meme-studio/canvas-stage'
 import { ComponentPalette } from '@/components/meme-studio/component-palette'
 import { PropertyPanel } from '@/components/meme-studio/property-panel'
@@ -15,6 +16,11 @@ import type {
   CanvasObject,
   MemeSchema,
 } from '@/lib/meme-studio/schema'
+import { cn } from '@/lib/utils'
+
+import { CosmicBackground } from '@/components/shared/cosmic-background'
+
+import styles from './meme-studio.module.css'
 
 const DEFAULT_SCHEMA: MemeSchema = {
   canvas: {
@@ -72,37 +78,52 @@ export function StudioWorkspace() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-4rem)] flex-col">
-      <div className="flex items-center justify-between border-b border-border px-6 py-3">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            ← 返回首页
+    <div className={styles['studio-shell']}>
+      <CosmicBackground />
+
+      <header className={styles['studio-header']}>
+        <div className={styles['studio-header__identity']}>
+          <Link href="/" className={styles['studio-header__back']}>
+            <ArrowLeft aria-hidden="true" />
+            返回首页
           </Link>
-          <h1 className="font-heading text-xl text-foreground">表情包工作室</h1>
+          <div className={styles['studio-header__heading']}>
+            <p className={styles['studio-header__eyebrow']}>MEME STUDIO</p>
+            <h1 className={styles['studio-header__title']}>
+              表情包<span>工作室</span>
+            </h1>
+          </div>
         </div>
-        <div className="flex gap-2">
+
+        <div className={styles['studio-header__actions']}>
           <button
             type="button"
             onClick={handleDelete}
             disabled={!selectedId}
-            className="rounded-lg border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:border-destructive hover:text-destructive disabled:opacity-40"
+            className={cn(
+              styles['studio-action'],
+              styles['studio-action--danger'],
+            )}
           >
-            删除选中
+            <Trash2 aria-hidden="true" />
+            <span>删除选中</span>
           </button>
           <button
             type="button"
             onClick={handleExport}
             disabled={isExporting}
-            className="rounded-lg bg-primary px-3 py-1.5 text-sm text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+            className={cn(
+              styles['studio-action'],
+              styles['studio-action--primary'],
+            )}
           >
-            {isExporting ? '导出中…' : '导出 PNG'}
+            <Download aria-hidden="true" />
+            <span>{isExporting ? '导出中…' : '导出 PNG'}</span>
           </button>
         </div>
-      </div>
-      <div className="flex flex-1 overflow-hidden">
+      </header>
+
+      <div className={styles['studio-body']}>
         <ComponentPalette onAdd={handleAdd} />
         <CanvasStage
           schema={schema}

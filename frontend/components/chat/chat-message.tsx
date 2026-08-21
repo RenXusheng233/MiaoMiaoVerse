@@ -1,7 +1,11 @@
 'use client'
 
+import { Sparkles } from 'lucide-react'
+
 import { cn } from '@/lib/utils'
 import type { ChatMessage as ChatMessageData } from '@/lib/api'
+
+import styles from './chat.module.css'
 
 interface ChatMessageProps {
   message: ChatMessageData
@@ -11,23 +15,36 @@ interface ChatMessageProps {
 export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
   const isUser = message.role === 'user'
   return (
-    <div className={cn('flex', isUser ? 'justify-end' : 'justify-start')}>
-      <div
-        className={cn(
-          'max-w-[80%] rounded-xl px-4 py-3',
-          isUser
-            ? 'bg-primary text-primary-foreground'
-            : 'border border-border bg-card text-foreground',
+    <div
+      className={cn(
+        styles['chat-message'],
+        isUser
+          ? styles['chat-message--user']
+          : styles['chat-message--assistant'],
+      )}
+    >
+      <div className={styles['chat-message__meta']}>
+        {isUser ? (
+          'YOU / PILOT'
+        ) : (
+          <>
+            <Sparkles aria-hidden="true" />
+            MIAO SIGNAL
+          </>
         )}
-      >
+      </div>
+      <div className={styles['chat-message__bubble']}>
         <p className="whitespace-pre-wrap">
           {message.content}
           {isStreaming ? (
-            <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-current align-middle" />
+            <span
+              aria-hidden="true"
+              className={styles['chat-message__cursor']}
+            />
           ) : null}
         </p>
         {message.disclaimer ? (
-          <p className="mt-2 border-t border-border/60 pt-2 text-xs text-muted-foreground">
+          <p className={styles['chat-message__disclaimer']}>
             ⚠️ {message.disclaimer}
           </p>
         ) : null}

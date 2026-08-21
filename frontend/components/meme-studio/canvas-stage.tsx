@@ -15,6 +15,8 @@ import { Canvas as FabricCanvas } from 'fabric'
 import { FabricBridge } from '@/lib/meme-studio/fabric-bridge'
 import type { MemeSchema } from '@/lib/meme-studio/schema'
 
+import styles from './meme-studio.module.css'
+
 interface CanvasStageProps {
   schema: MemeSchema
   bridgeRef: React.MutableRefObject<FabricBridge | null>
@@ -119,11 +121,11 @@ export function CanvasStage({
   return (
     <div
       ref={containerRef}
-      className="relative flex flex-1 items-center justify-center overflow-auto bg-muted/40"
+      className={styles['studio-stage']}
     >
       {schema.objects.length === 0 ? (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <p className="text-sm text-muted-foreground">
+          <p className={styles['studio-stage__empty']}>
             从左侧添加组件开始创作
           </p>
         </div>

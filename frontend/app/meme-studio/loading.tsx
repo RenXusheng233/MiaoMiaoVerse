@@ -1,11 +1,17 @@
+import { CosmicBackground } from '@/components/shared/cosmic-background'
+import { cn } from '@/lib/utils'
+
+import styles from '@/components/meme-studio/meme-studio.module.css'
+
 export default function Loading() {
   return (
-    <div className="flex h-[calc(100dvh-4rem)] animate-pulse flex-col bg-muted/30">
-      <div className="h-14 border-b border-border" />
-      <div className="flex flex-1">
-        <div className="w-56 border-r border-border" />
-        <div className="flex-1" />
-        <div className="w-72 border-l border-border" />
+    <div className={cn(styles['studio-loading'], 'animate-pulse')}>
+      <CosmicBackground />
+      <div className={styles['studio-loading__header']} />
+      <div className={styles['studio-loading__body']}>
+        <div className={styles['studio-loading__palette']} />
+        <div className={styles['studio-loading__stage']} />
+        <div className={styles['studio-loading__inspector']} />
       </div>
     </div>
   )

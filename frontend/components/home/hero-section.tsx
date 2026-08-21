@@ -1,11 +1,15 @@
 'use client'
 
 import { useRef } from 'react'
-import Image from 'next/image'
-import { motion, useScroll, useTransform } from 'motion/react'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { ArrowDown, BookOpen } from 'lucide-react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+
+import { CosmicBackground } from '@/components/shared/cosmic-background'
+import { CosmicButton } from '@/components/home/cosmic-button'
+import { VersePortal } from '@/components/home/verse-portal'
 import type { CatBreed } from '@/lib/types/cat'
+
+import styles from './home.module.css'
 
 interface HeroSectionProps {
   cat: CatBreed
@@ -13,74 +17,98 @@ interface HeroSectionProps {
 
 export function HeroSection({ cat }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null)
+  const shouldReduceMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
   })
-
-  const cloudsY = useTransform(scrollYProgress, [0, 1], [0, -80])
-  const pawsY = useTransform(scrollYProgress, [0, 1], [0, -160])
-  const catY = useTransform(scrollYProgress, [0, 1], [0, -240])
-  const catOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
+  const textY = useTransform(scrollYProgress, [0, 1], [0, -24])
+  const portalY = useTransform(scrollYProgress, [0, 1], [0, -48])
 
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-[55vh] min-h-100 w-full flex-col items-center justify-center overflow-hidden bg-linear-to-b from-secondary via-background to-background"
+      aria-labelledby="home-hero-title"
+      className={styles['home-hero']}
     >
-      {/* Clouds sit in a spread-out grid like the paw layer below, not pinned
-          to symmetric corners — two diagonal cells with jitter offsets and
-          different sizes read as casually scattered. */}
-      <motion.div
-        style={{ y: cloudsY }}
-        className="pointer-events-none absolute inset-0 grid grid-cols-3 grid-rows-3 place-items-center text-6xl opacity-40"
-        aria-hidden
-      >
-        <span className="translate-x-12 translate-y-2 text-5xl">☁️</span>
-        <span className="col-start-3 row-start-1 -translate-x-12 translate-y-6 text-7xl">
-          ☁️
-        </span>
-      </motion.div>
+      <CosmicBackground />
 
-      <motion.div
-        style={{ y: pawsY }}
-        className="pointer-events-none absolute inset-0 grid grid-cols-4 place-items-center text-4xl opacity-20"
-        aria-hidden
-      >
-        <span>🐾</span>
-        <span>✨</span>
-        <span>🐾</span>
-        <span>✨</span>
-      </motion.div>
-
-      <motion.div
-        style={{ y: catY, opacity: catOpacity }}
-        className="relative z-10 mb-6 h-40 w-40 overflow-hidden rounded-full border-4 border-card shadow-xl sm:h-56 sm:w-56"
-      >
-        <Image
-          src={cat.image_url}
-          alt={cat.name_zh}
-          fill
-          sizes="(max-width: 640px) 160px, 224px"
-          className="object-cover"
-          priority
-        />
-      </motion.div>
-
-      <div className="relative z-10 flex flex-col items-center gap-4 px-6 text-center">
-        <h1 className="font-heading text-4xl text-foreground sm:text-5xl">
-          喵喵宇宙 MiaoMiaoVerse
-        </h1>
-        <p className="max-w-lg text-lg text-muted-foreground">
-          猫咪百科 · AI 文案 · 表情包生成 · 疗愈问答，一站式猫奴乐园
-        </p>
-        <a
-          href="#quick-links"
-          className={cn(buttonVariants({ size: 'lg' }), 'mt-2')}
+      <div className={styles['home-hero__layout']}>
+        <motion.div
+          style={{ y: shouldReduceMotion ? 0 : textY }}
+          className={styles['home-hero__copy']}
         >
-          进入探索
-        </a>
+          <motion.p
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className={styles['home-hero__eyebrow']}
+          >
+            <span aria-hidden="true" />
+            喵喵宇宙 · MULTIVERSE GATEWAY
+          </motion.p>
+
+          <h1 id="home-hero-title" className={styles['home-hero__title']}>
+            <motion.span
+              initial={shouldReduceMotion ? false : { opacity: 0, x: -18 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.12, duration: 0.42, ease: 'easeOut' }}
+              className={styles['home-hero__miao']}
+            >
+              MiaoMiao
+            </motion.span>
+            <motion.span
+              initial={
+                shouldReduceMotion ? false : { opacity: 0, scaleX: 0.72 }
+              }
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ delay: 0.32, duration: 0.7, ease: 'easeOut' }}
+              className={styles['home-hero__verse']}
+            >
+              <span
+                aria-hidden="true"
+                className={styles['home-hero__verse-glow']}
+              >
+                Verse
+              </span>
+              Verse
+            </motion.span>
+          </h1>
+
+          <motion.p
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9, duration: 0.38, ease: 'easeOut' }}
+            className={styles['home-hero__description']}
+          >
+            穿过星门，探索猫咪百科、AI 文案、表情包生成与疗愈问答。
+          </motion.p>
+
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.08, duration: 0.34, ease: 'easeOut' }}
+            className={styles['home-hero__actions']}
+          >
+            <CosmicButton variant="primary" href="#missions">
+              进入任务舱
+              <ArrowDown aria-hidden="true" />
+            </CosmicButton>
+            <CosmicButton variant="secondary" href="/cat-gallery">
+              浏览猫咪档案
+              <BookOpen aria-hidden="true" />
+            </CosmicButton>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          style={{ y: shouldReduceMotion ? 0 : portalY }}
+          className={styles['home-hero__portal']}
+        >
+          <VersePortal cat={cat} />
+        </motion.div>
       </div>
+      <div aria-hidden="true" className={styles['home-hero__fade']} />
     </section>
   )
 }

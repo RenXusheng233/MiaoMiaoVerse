@@ -1,0 +1,148 @@
+@keyframes cosmic-drift {
+  0%,
+  100% {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes star-breathe {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scale(0.72);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.2);
+  }
+}
+
+.cosmic-background {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cosmic-background::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: radial-gradient(
+    circle at 50% 48%,
+    transparent 0 32%,
+    color-mix(in oklch, var(--void) 70%, transparent) 82%
+  );
+}
+
+.cosmic-background__nebula {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.48;
+  filter: blur(70px);
+  animation: cosmic-drift 18s ease-in-out infinite;
+}
+
+.cosmic-background__nebula--violet {
+  top: -25%;
+  right: 1%;
+  width: 56rem;
+  height: 46rem;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--rift) 54%, transparent),
+    color-mix(in oklch, var(--nebula) 18%, transparent) 45%,
+    transparent 72%
+  );
+}
+
+.cosmic-background__nebula--cyan {
+  bottom: -32%;
+  left: -18%;
+  width: 46rem;
+  height: 38rem;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--plasma) 34%, transparent),
+    transparent 68%
+  );
+  animation-delay: -8s;
+}
+
+.cosmic-background__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.13;
+  background-image:
+    linear-gradient(
+      color-mix(in oklch, var(--rift) 35%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in oklch, var(--rift) 35%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 5rem 5rem;
+  mask-image: radial-gradient(circle at 65% 45%, black, transparent 76%);
+  transform: perspective(42rem) rotateX(61deg) scale(1.45) translateY(24%);
+  transform-origin: center bottom;
+}
+
+.cosmic-background__stars {
+  position: absolute;
+  inset: 0;
+}
+
+.cosmic-background__stars i {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--star);
+  box-shadow: 0 0 12px var(--plasma);
+  animation: star-breathe 5s ease-in-out infinite;
+}
+
+.cosmic-background__stars i:nth-child(3n) {
+  width: 5px;
+  height: 5px;
+  background: var(--plasma);
+}
+
+.cosmic-background__stars i:nth-child(4n) {
+  background: var(--rift-secondary);
+}
+
+.cosmic-background__route {
+  position: absolute;
+  top: 64%;
+  right: 12%;
+  width: 48%;
+  height: 26%;
+  border-top: 1px solid color-mix(in oklch, var(--plasma) 28%, transparent);
+  border-radius: 50%;
+  transform: rotate(-12deg);
+  box-shadow: 0 -8px 28px color-mix(in oklch, var(--rift) 12%, transparent);
+}
+
+@media (max-width: 767px) {
+  .cosmic-background__nebula {
+    filter: blur(48px);
+  }
+
+  .cosmic-background__grid {
+    background-size: 3.5rem 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cosmic-background__nebula,
+  .cosmic-background__stars i {
+    animation: none !important;
+  }
+}

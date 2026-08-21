@@ -56,10 +56,10 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 
 ```bash
 bun dev             # 开发服务器
-bun test            # 运行 Bun 单元测试
 bun run build       # 生产构建(next build)
 bun run start       # 生产模式运行
 bun lint            # ESLint
+bun lint:fix        # 自动修复 ESLint 问题
 bunx tsc --noEmit   # 类型检查
 bunx shadcn add <component>   # 添加 shadcn 组件
 ```
@@ -72,7 +72,7 @@ frontend/
 │   ├── page.tsx              # 首页(RSC:并行获取今日猫 + 全品种)
 │   ├── error.tsx             # 全局错误边界(unstable_retry 重试)
 │   ├── loading.tsx           # 首页骨架屏
-│   ├── layout.tsx            # 根布局(Geist + ZCOOL KuaiLe 字体)
+│   ├── layout.tsx            # 根布局(Geist + Space Grotesk 字体)
 │   ├── cat-gallery/           # 完整猫咪百科 + 搜索 + 骨架屏
 │   ├── cats/[id]/            # 猫咪详情页 + not-found
 │   ├── copywriting/          # 文案生成页 + loading
@@ -103,7 +103,7 @@ frontend/
 - **图片域名**：外部图源需在 `next.config.ts` 的 `remotePatterns` 配置(`cdn2.thecatapi.com` 已配);`next/image` 的 `fill` 要求**直接父元素**为 `relative/absolute/fixed`
 - **SSE**：EventSource 不支持 POST，统一用 `lib/sse.ts` 的 `streamSSE`(手写解析，chat 页面复用)
 - **Fabric.js v7**(meme-studio)：无 `fabric` 命名空间，全部命名导入；选中切换事件是 `selection:updated`(v6 的 `selection:changed` 已改名)；`Textbox` 宽度只增不减(缩小字号需手动重测 `calcTextWidth()`，见 FabricBridge `shrinkToFit`)
-- **样式约定**：奶油马卡龙配色、`font-heading`(ZCOOL KuaiLe)标题、小圆角
+- **样式约定**：奶油观测舱亮色 + 深空控制室暗色；`font-heading` 使用 Space Grotesk 几何无衬线标题；以克制的猫科科技特效强化交互状态
 
 ## 文档索引
 

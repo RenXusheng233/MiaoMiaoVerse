@@ -3,15 +3,26 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { ArrowUpRight, CalendarDays, RefreshCw, Sparkles } from 'lucide-react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { getRandomCat } from '@/lib/api'
 import type { DailyCatResponse } from '@/lib/types/cat'
 
+import styles from './home.module.css'
+
 const IMAGE_PRELOAD_TIMEOUT_MS = 8000
 
 interface DailyCatWidgetProps {
   initialData: DailyCatResponse
+}
+
+interface DailyCatPanelContentProps {
+  data: DailyCatResponse
+  onReroll: () => void
+  isLoading: boolean
 }
 
 /** Warm the browser cache for an image URL; resolves when loaded (or timed out). */
@@ -30,6 +41,7 @@ export function DailyCatWidget({ initialData }: DailyCatWidgetProps) {
   const [data, setData] = useState(initialData)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const shouldReduceMotion = useReducedMotion()
 
   async function handleReroll() {
     setIsLoading(true)
@@ -51,47 +63,137 @@ export function DailyCatWidget({ initialData }: DailyCatWidgetProps) {
     }
   }
 
+  const panelContent = (
+    <DailyCatPanelContent
+      data={data}
+      isLoading={isLoading}
+      onReroll={handleReroll}
+    />
+  )
+
   return (
-    <section className="mx-auto flex w-full max-w-3xl flex-col items-center gap-6 px-6 py-16 text-center">
-      <h2 className="font-heading text-3xl text-foreground">今日明星猫咪</h2>
-      <div className="relative aspect-square w-64 overflow-hidden rounded-4xl border-4 border-card shadow-xl sm:w-80">
+    <section
+      aria-labelledby="daily-cat-title"
+      className="mx-auto w-full max-w-360 px-5 py-20 sm:px-8 lg:px-12"
+    >
+      <div className="mb-6 flex items-center gap-3 font-mono text-[0.68rem] font-medium tracking-[0.2em] text-signal-secondary uppercase">
+        <Sparkles aria-hidden="true" className="size-4" />
+        <span className="sr-only">Daily transmission / 03</span>
+        <span aria-hidden="true">Deep space transmission / 03</span>
+      </div>
+      <div
+        className={cn(
+          styles['deep-space-dossier'],
+          'overflow-hidden rounded-2xl border border-grid-line bg-surface shadow-panel',
+        )}
+      >
+        {shouldReduceMotion ? (
+          panelContent
+        ) : (
+          <AnimatePresence initial={false} mode="wait">
+            <motion.div
+              key={data.breed.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
+            >
+              {panelContent}
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </div>
+      {error ? (
+        <p aria-live="polite" className="mt-4 text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
+    </section>
+  )
+}
+
+function DailyCatPanelContent({
+  data,
+  onReroll,
+  isLoading,
+}: DailyCatPanelContentProps) {
+  return (
+    <div className="grid min-w-0 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+      <div className="relative aspect-[4/3] min-h-72 overflow-hidden border-b border-grid-line lg:aspect-auto lg:min-h-112 lg:border-r lg:border-b-0">
         <Link
           href={`/cats/${data.breed.id}`}
-          className="relative block h-full w-full"
+          className={cn(
+            styles['daily-image'],
+            'group relative block h-full w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-plasma',
+          )}
         >
           <Image
             src={data.breed.image_url}
             alt={data.breed.name_zh}
             fill
-            sizes="(max-width: 640px) 256px, 320px"
-            className="object-cover"
-            priority
+            sizes="(max-width: 1024px) 100vw, 45vw"
+            loading="lazy"
+            className="object-cover transition-[transform,filter] duration-500 motion-safe:group-hover:scale-[1.03] motion-safe:group-focus-visible:scale-[1.03] motion-reduce:transition-none"
           />
-        </Link>
-      </div>
-      <div className="space-y-2">
-        <h3 className="font-heading text-2xl text-foreground">
-          {data.breed.name_zh}
-          <span className="ml-2 text-base text-muted-foreground">
-            {data.breed.name_en}
+          <span className="absolute inset-x-5 top-5 flex items-center justify-between font-mono text-[0.65rem] tracking-[0.16em] text-overlay-foreground/80 uppercase drop-shadow-sm">
+            <span>MMV / 03</span>
+            <span>Live archive</span>
           </span>
-        </h3>
-        <p className="max-w-md text-muted-foreground">
-          &ldquo;{data.breed.quote}&rdquo;
-        </p>
-      </div>
-      <div className="flex gap-3">
-        <Button onClick={handleReroll} disabled={isLoading} size="lg">
-          {isLoading ? '召唤中…' : '换一只'}
-        </Button>
-        <Link
-          href={`/cats/${data.breed.id}`}
-          className={cn(buttonVariants({ variant: 'secondary', size: 'lg' }))}
-        >
-          查看详情
         </Link>
       </div>
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
-    </section>
+      <div className="flex min-h-72 flex-col justify-between gap-8 p-6 sm:p-8 lg:min-h-112 lg:p-10">
+        <div className="space-y-7">
+          <div className="flex items-center gap-2 font-mono text-xs tracking-[0.12em] text-muted-foreground">
+            <CalendarDays aria-hidden="true" className="size-4 text-signal" />
+            <time dateTime={data.date}>{data.date}</time>
+          </div>
+          <div>
+            <p className="mb-3 font-mono text-[0.68rem] tracking-[0.18em] text-signal-secondary uppercase">
+              Today&apos;s specimen
+            </p>
+            <h2
+              id="daily-cat-title"
+              className="font-heading text-4xl leading-none tracking-tight text-foreground sm:text-5xl"
+            >
+              {data.breed.name_zh}
+            </h2>
+            <p className="mt-3 font-mono text-sm tracking-[0.14em] text-muted-foreground uppercase">
+              {data.breed.name_en}
+            </p>
+          </div>
+          <blockquote className="max-w-xl border-l-2 border-signal pl-4 text-base leading-8 text-muted-foreground sm:text-lg">
+            &ldquo;{data.breed.quote}&rdquo;
+          </blockquote>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Button
+            onClick={onReroll}
+            disabled={isLoading}
+            aria-busy={isLoading}
+            size="lg"
+            className={cn(styles['daily-reroll'], 'min-h-11')}
+          >
+            <RefreshCw
+              aria-hidden="true"
+              className={cn(
+                'size-4 motion-reduce:animate-none',
+                isLoading && 'motion-safe:animate-spin',
+              )}
+            />
+            {isLoading ? '召唤中…' : '换一只'}
+          </Button>
+          <Link
+            href={`/cats/${data.breed.id}`}
+            className={cn(
+              buttonVariants({ variant: 'outline', size: 'lg' }),
+              'min-h-11',
+            )}
+          >
+            查看详情
+            <ArrowUpRight aria-hidden="true" />
+          </Link>
+        </div>
+      </div>
+    </div>
   )
 }

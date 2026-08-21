@@ -3,16 +3,19 @@ import { DailyCatWidget } from '@/components/home/daily-cat-widget'
 import { HeroSection } from '@/components/home/hero-section'
 import { QuickLinksSection } from '@/components/home/quick-links-section'
 import { getCats, getDailyCat } from '@/lib/api'
+import { cn } from '@/lib/utils'
+
+import styles from '@/components/home/home.module.css'
 
 export default async function Home() {
   const [dailyCat, cats] = await Promise.all([getDailyCat(), getCats()])
 
   return (
-    <div className="flex flex-1 flex-col">
+    <main className={cn(styles['home-shell'], 'flex flex-1 flex-col')}>
       <HeroSection cat={dailyCat.breed} />
       <QuickLinksSection />
       <CatGallery cats={cats} />
       <DailyCatWidget initialData={dailyCat} />
-    </div>
+    </main>
   )
 }
