@@ -17,6 +17,9 @@ import type {
   CanvasObject,
   MemeSchema,
 } from '@/lib/meme-studio/schema'
+import { cn } from '@/lib/utils'
+
+import styles from './meme-studio.module.css'
 
 interface PropertyPanelProps {
   schema: MemeSchema
@@ -25,8 +28,7 @@ interface PropertyPanelProps {
   onObjectChange: (id: string, patch: Partial<CanvasObject>) => void
 }
 
-const BASE_INPUT =
-  'w-full rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring'
+const BASE_INPUT = styles['studio-input']
 
 /** Custom-size bounds — sane meme canvas dimensions. */
 const MIN_SIZE = 100
@@ -132,8 +134,14 @@ export function PropertyPanel({
 
   if (!selected) {
     return (
-      <aside className="w-72 shrink-0 space-y-4 overflow-y-auto border-l border-border p-4">
-        <h2 className="font-heading text-lg text-foreground">全局配置</h2>
+      <aside
+        className={cn(
+          styles['studio-panel'],
+          styles['studio-inspector'],
+          'space-y-4',
+        )}
+      >
+        <h2>全局配置</h2>
 
         <section className="space-y-2">
           <h3 className="text-sm font-medium text-muted-foreground">
@@ -356,8 +364,14 @@ export function PropertyPanel({
   const config = OBJECT_PROPERTY_CONFIGS[selected.type]
 
   return (
-    <aside className="w-72 shrink-0 space-y-4 overflow-y-auto border-l border-border p-4">
-      <h2 className="font-heading text-lg text-foreground">{config.title}</h2>
+    <aside
+      className={cn(
+        styles['studio-panel'],
+        styles['studio-inspector'],
+        'space-y-4',
+      )}
+    >
+      <h2>{config.title}</h2>
       <section className="space-y-2">
         {config.fields.map((field) => (
           <FieldEditor

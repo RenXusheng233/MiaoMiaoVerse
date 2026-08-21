@@ -16,6 +16,9 @@ import type {
   EmojiObject,
   ShapeKind,
 } from '@/lib/meme-studio/schema'
+import { cn } from '@/lib/utils'
+
+import styles from './meme-studio.module.css'
 
 interface ComponentPaletteProps {
   onAdd: (obj: CanvasObject) => void
@@ -23,22 +26,31 @@ interface ComponentPaletteProps {
 
 export function ComponentPalette({ onAdd }: ComponentPaletteProps) {
   return (
-    <aside className="w-56 shrink-0 space-y-4 overflow-y-auto border-r border-border p-4">
-      <h2 className="font-heading text-lg text-foreground">组件</h2>
+    <aside
+      className={cn(
+        styles['studio-panel'],
+        styles['studio-palette'],
+        'space-y-4',
+      )}
+    >
+      <h2>组件</h2>
 
       <section>
-        <h3 className="mb-2 text-sm font-medium text-muted-foreground">文本</h3>
+        <h3 className="mb-2">文本</h3>
         <button
           type="button"
           onClick={() => onAdd(createDefaultObject('text'))}
-          className="w-full rounded-xl border border-border px-4 py-3 text-left text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
+          className={cn(
+            styles['palette-button'],
+            'w-full rounded-xl border px-4 py-3 text-left text-sm',
+          )}
         >
           添加文本
         </button>
       </section>
 
       <section>
-        <h3 className="mb-2 text-sm font-medium text-muted-foreground">气泡</h3>
+        <h3 className="mb-2">气泡</h3>
         <div className="space-y-2">
           {(Object.keys(BUBBLE_PRESETS) as BubblePresetId[]).map((id) => (
             <button
@@ -56,7 +68,10 @@ export function ComponentPalette({ onAdd }: ComponentPaletteProps) {
                   cornerRadius: p.cornerRadius,
                 } as BubbleObject)
               }}
-              className="w-full rounded-xl border border-border px-4 py-3 text-left text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
+              className={cn(
+                styles['palette-button'],
+                'w-full rounded-xl border px-4 py-3 text-left text-sm',
+              )}
             >
               {BUBBLE_PRESETS[id].label}
             </button>
@@ -65,9 +80,7 @@ export function ComponentPalette({ onAdd }: ComponentPaletteProps) {
       </section>
 
       <section>
-        <h3 className="mb-2 text-sm font-medium text-muted-foreground">
-          emoji 贴纸
-        </h3>
+        <h3 className="mb-2">emoji 贴纸</h3>
         <div className="grid grid-cols-4 gap-2">
           {EMOJI_SET.map((emoji) => (
             <button
@@ -76,7 +89,10 @@ export function ComponentPalette({ onAdd }: ComponentPaletteProps) {
               onClick={() =>
                 onAdd({ ...createDefaultObject('emoji'), emoji } as EmojiObject)
               }
-              className="flex h-11 items-center justify-center rounded-xl border border-border text-xl transition-colors hover:border-primary"
+              className={cn(
+                styles['palette-icon-button'],
+                'flex h-11 items-center justify-center rounded-xl border text-xl',
+              )}
             >
               {emoji}
             </button>
@@ -85,7 +101,7 @@ export function ComponentPalette({ onAdd }: ComponentPaletteProps) {
       </section>
 
       <section>
-        <h3 className="mb-2 text-sm font-medium text-muted-foreground">形状</h3>
+        <h3 className="mb-2">形状</h3>
         <div className="grid grid-cols-3 gap-2">
           {(
             [
@@ -101,7 +117,10 @@ export function ComponentPalette({ onAdd }: ComponentPaletteProps) {
               key={kind}
               type="button"
               onClick={() => onAdd(createShapeObject(kind))}
-              className="flex h-11 items-center justify-center rounded-xl border border-border text-lg transition-colors hover:border-primary"
+              className={cn(
+                styles['palette-icon-button'],
+                'flex h-11 items-center justify-center rounded-xl border text-lg',
+              )}
             >
               {kind === 'circle'
                 ? '●'
