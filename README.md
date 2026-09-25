@@ -82,5 +82,6 @@ MiaoMiaoVerse/
 | `PRD.md`                     | 产品需求文档(含实现进度标注)                       |
 | `backend/README.md`          | 后端说明：命令速查，数据管理(sync/reset)，API 概览 |
 | `frontend/README.md`         | 前端说明：快速开始，页面路由，关键约定             |
+| `docs/project-understanding-roadmap.md` | 按真实请求链路学习 FastAPI、LangChain、RAG 与后续迭代 |
 | `backend/docs/superpowers/`  | 后端各模块设计文档与实现计划                       |
 | `frontend/docs/superpowers/` | 前端各模块设计文档与实现计划                       |
